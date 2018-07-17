@@ -1,0 +1,26 @@
+#!/usr/bin/env sh
+
+# Usage: doc/api.md#terminate
+
+terminate(){
+    if [ -z "${1}" ]; then
+        echo "terminate: arguments are missing"
+        return 127
+
+    fi
+
+	GREEN=$(tput setaf 2)
+	RED=$(tput setaf 9)
+	NC=$(tput sgr0)
+
+	PASS_MSG=""
+	FAIL_MSG=""
+
+	if [ -n "${2}" ]; then PASS_MSG=" ${2}"; fi
+	if [ -n "${3}" ]; then FAIL_MSG=" ${3}"; fi
+
+	if [ "${1}" = 0 ]; then echo "${GREEN}✔${PASS_MSG}${NC}";
+	else echo "${RED}❌${FAIL_MSG}${NC}" >&2; fi
+
+	exit "${1}"
+}

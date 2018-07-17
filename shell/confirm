@@ -1,0 +1,34 @@
+#!/usr/bin/env sh
+
+# Usage: doc/api.md#confirm
+
+confirm(){
+    if [ -z "${1}" ]; then
+        echo "confirm: arguments are missing"
+        return 127
+
+    else
+        QUESTION="${1}"
+        YES_CALLBACK="${2}"
+        NO_CALLBACK="${3}"
+
+        # Ask a 'yes/no' type question
+        echo "${QUESTION} [y/n]? "
+
+        # Listen for input
+        old_stty_cfg=$(stty -g)
+        stty raw -echo
+        response=$( while ! head -c 1 | grep -i '[ny]'; do true; done )
+        stty "${old_stty_cfg}"
+
+        # Respond to input
+        if echo "$response" | grep -iq "^y"; then
+            "${YES_CALLBACK}"
+
+        elif [ -n "${2}" ]; then
+            "${NO_CALLBACK}"
+
+        fi
+    
+    fi
+}

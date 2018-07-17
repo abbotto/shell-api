@@ -1,0 +1,24 @@
+#!/usr/bin/env sh
+
+. shell/print-text
+
+echo ""
+print-text 12 "Checking if the 'stop-daemon' function works..."
+
+. shell/strict-mode
+. shell/terminate
+. shell/stop-daemon
+
+echo ""
+stop-daemon daemon_test
+
+EXIT_CODE="${?}"
+LOG="/tmp/shell-api/daemon_test.log"
+PID="/tmp/shell-api/daemon_test.pid"
+
+if [ ! -f "${LOG}" ] & [ -f "${PID}" ]; then
+    EXIT_CODE=0
+
+fi
+
+terminate "${EXIT_CODE}" "PASS" "FAIL"

@@ -1,0 +1,20 @@
+#!/usr/bin/env sh
+
+SHELL_API_PATH="${SHELL_API_PATH}"
+
+# Enable strict mode
+. "${SHELL_API_PATH}"/strict-mode
+
+# Load dependencies
+. "${SHELL_API_PATH}"/confirm
+. "${SHELL_API_PATH}"/import
+. "${SHELL_API_PATH}"/join-file
+. "${SHELL_API_PATH}"/pipe-file
+. "${SHELL_API_PATH}"/print-text
+. "${SHELL_API_PATH}"/read-file
+. "${SHELL_API_PATH}"/require
+. "${SHELL_API_PATH}"/start-daemon
+. "${SHELL_API_PATH}"/stop-daemon
+. "${SHELL_API_PATH}"/terminate
+. "${SHELL_API_PATH}"/watch-daemon
+. "${SHELL_API_PATH}"/write-file

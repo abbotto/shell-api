@@ -1,0 +1,19 @@
+#!/usr/bin/env sh
+
+# Usage: doc/api.md#print-text
+
+alias print-text="print_text"
+
+print_text(){
+
+    if [ -z "${1}" ]; then
+        echo "print-text: arguments are missing"
+        return 127
+
+    fi
+
+	START=$(tput setaf "${1}")
+	STOP=$(tput sgr0)
+
+	printf '%s\n' "${START}${2}${STOP}"
+}

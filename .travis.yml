@@ -1,0 +1,33 @@
+language: node_js
+
+notifications:
+  email: false
+  
+sudo: false
+
+node_js:
+  - "10"
+
+dist: trusty
+
+before_install:
+    - sudo apt-add-repository "deb http://archive.ubuntu.com/ubuntu trusty-backports main restricted universe multiverse"
+    - sudo apt-get -qq update
+    - sudo apt-get install xz-utils bash dash ksh zsh
+    - export scversion="stable" # or "v0.4.7", or "latest"
+    - wget "https://storage.googleapis.com/shellcheck/shellcheck-${scversion}.linux.x86_64.tar.xz"
+    - tar --xz -xvf shellcheck-"${scversion}".linux.x86_64.tar.xz
+    - sudo cp shellcheck-"${scversion}"/shellcheck /usr/bin/
+    - shellcheck --version
+
+env:
+  - CXX=g++-4.8
+
+branches:
+  only:
+    - master
+
+script:
+  - npm run lint:sh
+  - npm run test
+  

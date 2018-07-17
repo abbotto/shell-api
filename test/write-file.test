@@ -1,0 +1,19 @@
+#!/usr/bin/env sh
+
+. shell/print-text
+
+echo ""
+print-text 12 "Checking if the 'write-file' function works..."
+
+. shell/strict-mode
+. shell/terminate
+. shell/write-file
+
+echo ""
+write-file "./tmp/write-file" "hello world"
+
+EXIT_CODE="${?}"
+
+cat ./tmp/write-file
+
+terminate "${EXIT_CODE}" "PASS" "FAIL"

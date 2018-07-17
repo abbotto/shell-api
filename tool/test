@@ -1,0 +1,25 @@
+#!/usr/bin/env sh
+
+echo ""
+echo "--------------------------"
+echo "Testing in 'BASH' shell..."
+echo "--------------------------"
+./test/bash.test
+
+echo ""
+echo "--------------------------"
+echo "Testing in 'DASH' shell..."
+echo "--------------------------"
+./test/dash.test
+
+echo ""
+echo "--------------------------"
+echo "Testing in 'KSH' shell..."
+echo "--------------------------"
+./test/ksh.test
+
+echo ""
+echo "--------------------------"
+echo "Testing in 'ZSH' shell..."
+echo "--------------------------"
+./test/zsh.test

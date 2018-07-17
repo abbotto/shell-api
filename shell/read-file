@@ -1,0 +1,21 @@
+#!/usr/bin/env sh
+
+# Usage: doc/api.md#read-file
+
+alias read-file="read_file"
+
+read_file(){
+    if [ -z "${1}" ]; then
+        echo "read-file: arguments are missing"
+        return 127
+
+    fi
+
+    if [ ! -f "${1}" ]; then
+        echo "Cannot read '${1}' - no such file"
+        return 127
+
+    fi
+
+	awk '1' "${1}"
+}

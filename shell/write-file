@@ -1,0 +1,29 @@
+#!/usr/bin/env sh
+
+# Usage: doc/api.md#write-file
+
+alias write-file="write_file"
+
+write_file(){
+    SUDO=""
+
+    if [ -z "${1}" ]; then
+        echo "write-file: arguments are missing"
+        return 127
+
+    fi
+
+    if [ "${1}" = "-a" ] || [ "${1}" = "--auth" ]; then
+        SUDO="sudo "
+        shift $(( $# > 0 ? 1 : 0 ))
+
+    fi
+
+    if [ ! -f "${1}" ]; then
+        DIR=$(dirname "${1}")
+        if [ ! -f "${DIR}" ]; then mkdir -p "${DIR}"; fi
+        touch "${1}"
+    fi
+
+	echo "${2}" | "${SUDO}"tee "${1}" >/dev/null 2>&1
+}

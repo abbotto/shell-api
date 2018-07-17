@@ -1,0 +1,27 @@
+# Blacklist everything by default
+*
+
+# Whitelist files and directories
+!.editorconfig
+!.gitattributes
+!.gitignore
+!.nvmrc
+!.travis.yml
+!CONTRIBUTING.md
+!README.md
+!package.json
+
+!/doc
+!/doc/**/*
+
+!/shell
+!/shell/**/*
+
+!/test
+!/test/**/*
+
+!/tool
+!/tool/**/*
+
+# Blacklist files and directories
+.DS_Store

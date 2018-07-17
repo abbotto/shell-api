@@ -1,0 +1,28 @@
+{
+  "name": "shell-api",
+  "version": "0.1.0",
+  "description": "A POSIX-compliant framework for shell scripts",
+  "main": "shell/shell-api",
+  "scripts": {
+    "lint": "./tool/lint --sh && ./tool/lint --yml",
+    "lint:sh": "./tool/lint --sh",
+    "lint:yml": "./tool/lint --yml",
+    "test": "./tool/test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/abbotto/shell-api.git"
+  },
+  "keywords": [
+    "posix",
+    "api",
+    "shell",
+    "script"
+  ],
+  "author": "J. Abbott",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/abbotto/shell-api/issues"
+  },
+  "homepage": "https://github.com/abbotto/shell-api#readme"
+}

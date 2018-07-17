@@ -1,0 +1,18 @@
+#!/usr/bin/env sh
+
+# Usage: doc/api.md#strict-mode
+
+# Force POSIX-compliant behaviour
+POSIXLY_CORRECT=1;
+
+# Disable brace expansion
+# Enable alias expansion
+if [ -n "$(! set +B >/dev/null 2>&1)" ]; then
+    set +B
+    eval "shopt -s expand_aliases"
+
+fi
+
+# '-e' instructs the shell to exit if a command has a non-zero exit status
+# '-u' throws an error if an undefined variable is referenced
+set -eu

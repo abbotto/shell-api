@@ -1,0 +1,30 @@
+#!/usr/bin/env sh
+
+# Usage: doc/api.md#watch-daemon
+
+alias watch-daemon="watch_daemon"
+
+watch_daemon(){
+    OPTIONS=" -f"
+
+    if [ -z "${1}" ]; then
+        echo "watch-daemon: arguments are missing"
+        return 127
+
+    elif [ "${1}" = "-n" ] || [ "${1}" = "--no-follow" ]; then
+        OPTIONS=""
+        shift $(( $# > 0 ? 1 : 0 ))
+    
+    fi
+
+    LOG_PATH="/tmp/shell-api/${1}.log"
+
+    if [ ! -f "${LOG_PATH}" ]; then
+        echo "Cannot show output for '${1}' - no such process"
+        return 127
+
+    else
+        tail"${OPTIONS}" "${LOG_PATH}"
+    
+    fi
+}

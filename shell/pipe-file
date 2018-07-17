@@ -1,0 +1,52 @@
+#!/usr/bin/env sh
+
+# Usage: doc/api.md#pipe-file
+
+alias pipe-file="pipe_file"
+
+pipe_file(){
+    SUDO=""
+    DEPTH=""
+
+    if [ -z "${1}" ]; then
+        echo "pipe-file: arguments are missing"
+        return 127
+
+    fi
+
+    if [ "${1}" = "-a" ] || [ "${1}" = "--auth" ]; then
+        SUDO="sudo "
+        shift $(( $# > 0 ? 1 : 0 ))
+
+    fi
+
+    if [ "$1" -ge 0 ] 2> /dev/null; then
+        DEPTH=" -maxdepth ${1}"
+        shift $(( $# > 0 ? 1 : 0 ))
+
+    fi
+
+	FILE_PATH=$(dirname "${1}")
+    FILE_PATTERN=$(basename "${1}")
+    shift $(( $# > 0 ? 1 : 0 ))
+
+    if [ -z "${FILE_PATH}" ]; then
+        echo "Path is missing"
+        return 127
+
+    fi
+
+    if [ -z "${FILE_PATTERN}" ]; then
+        echo "Pattern is missing"
+        return 127
+
+    fi
+
+    if [ -z "${1}" ]; then
+        echo "Command argument is missing"
+        return 127
+
+    fi
+
+    find "${FILE_PATH}" -iname "${FILE_PATTERN}${DEPTH}" -print0 | xargs -0 "${SUDO}${*}"
+}

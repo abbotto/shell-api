@@ -1,0 +1,22 @@
+#!/usr/bin/env sh
+
+# Usage: doc/api.md#import
+
+import(){
+
+    if [ -z "${1}" ]; then
+        echo "import: arguments are missing"
+        return 127
+
+    fi
+
+	IS_FILE=$(ls "${1}")
+
+	if [ -z "${IS_FILE}" ]; then
+		echo "Required resource not found: '${1}'"
+
+	else
+		export "$(grep -E -v "^#" "${1}" | xargs)"
+
+	fi
+}

@@ -1,0 +1,22 @@
+#!/usr/bin/env sh
+
+. shell/terminate
+
+if [ "${1}" = "--yml" ]; then
+    echo "Checking '.travis.yml'..."
+    travis lint ./.travis.yml
+
+fi
+
+if [ "${1}" = "--sh" ]; then
+    echo ""
+    echo "Checking shell scripts..."
+
+    export SHELLCHECK_OPTS="-e SC1071 -e SC1090 -e SC2016 -e SC2034 -e SC2119 -e SC2181 -e SC2185"
+
+    shellcheck --shell=sh \
+    ./shell/* ./test/* ./tool/*
+
+fi
+
+terminate "${?}" "PASS" "FAIL"

@@ -1,0 +1,15 @@
+#!/usr/bin/env sh
+
+. shell/print-text
+
+echo ""
+print-text 12 "Checking if the 'print-text' function works..."
+
+. shell/strict-mode
+. shell/terminate
+. shell/print-text
+
+echo ""
+print-text 154 "HELLO WORLD"
+
+terminate "${?}" "PASS" "FAIL"

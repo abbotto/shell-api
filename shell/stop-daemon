@@ -1,0 +1,28 @@
+#!/usr/bin/env sh
+
+# Usage: doc/api.md#stop-daemon
+
+alias stop-daemon="stop_daemon"
+
+stop_daemon(){
+    PID_PATH="/tmp/shell-api/${1}.pid"
+
+    if [ -z "${1}" ]; then
+        echo "stop-daemon: arguments are missing"
+        return 127
+
+    elif [ ! -f "${PID_PATH}" ]; then
+        echo "Cannot stop '${1}' - no such process"
+        return 127
+
+    else
+        # Kill the process
+        PID=$(cat "${PID_PATH}")
+        kill -9 "${PID}" >/dev/null 2>&1
+
+        # Cleanup the tmp files
+        rm -rf "/tmp/shell-api/${1}.log"
+        rm -rf "/tmp/shell-api/${1}.pid"
+
+    fi
+}

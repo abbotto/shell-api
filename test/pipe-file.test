@@ -1,0 +1,15 @@
+#!/usr/bin/env sh
+
+. shell/print-text
+
+echo ""
+print-text 12 "Checking if the 'pipe-file' function works..."
+
+. shell/strict-mode
+. shell/terminate
+. shell/pipe-file
+
+echo ""
+pipe-file ./tmp/.env.* cat
+
+terminate "${?}" "PASS" "FAIL"
