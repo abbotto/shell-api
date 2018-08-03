@@ -16,7 +16,7 @@ EXIT_CODE="${?}"
 LOG="/tmp/shell-api/daemon_test.log"
 PID="/tmp/shell-api/daemon_test.pid"
 
-if [ ! -f "${LOG}" ] & [ -f "${PID}" ]; then
+if [ ! -f "${LOG}" ] && [ -f "${PID}" ]; then
     EXIT_CODE=0
 
 fi
