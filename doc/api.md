@@ -77,7 +77,7 @@ Reference: [Wikipedia](https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit)
 - Require commands and/or scripts.
 - Return an error if a command or file doesn't exist.
 
-      Usage: require <SCRIPT_OR_COMMAND>
+      Usage: require <SCRIPT_OR_COMMAND> <OPTIONAL_MESSAGE>
 
 [source code](../shell/require)
 
