@@ -5,8 +5,9 @@
 alias pipe-file="pipe_file"
 
 pipe_file(){
-    SUDO=""
     DEPTH=""
+    PLACEHOLDER=""
+    SUDO=""
 
     if [ -z "${1}" ]; then
         echo "pipe-file: arguments are missing"
@@ -15,7 +16,7 @@ pipe_file(){
     fi
 
     if [ "${1}" = "-a" ] || [ "${1}" = "--auth" ]; then
-        SUDO="sudo "
+        SUDO=" sudo"
         shift $(( $# > 0 ? 1 : 0 ))
 
     fi
@@ -48,5 +49,10 @@ pipe_file(){
 
     fi
 
-    find "${FILE_PATH}" -iname "${FILE_PATTERN}${DEPTH}" -print0 | xargs -0 "${SUDO}${*}"
+    # The '-iname' option instructs 'find' to search for files based on a pattern.
+    # The '-print0' option instructs 'find' to properly handle filenames containing blanks or newlines.
+    # The '-0' option instructs 'xargs' to split input on null bytes instead of blanks or newlines.
+    # The '-I' option instructs 'xargs' to look for the '{}' placeholder and replace it with a filename.
+    if echo "${*}" | grep -q "{}" 2> /dev/null; then PLACEHOLDER=" -I{}"; fi
+    eval "find ${FILE_PATH} -iname ${FILE_PATTERN}${DEPTH} -print0 | xargs -0${PLACEHOLDER}${SUDO} ${*}"
 }

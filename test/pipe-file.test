@@ -10,6 +10,6 @@ print-text 12 "Checking if the 'pipe-file' function works..."
 . shell/pipe-file
 
 echo ""
-pipe-file ./tmp/.env.* cat
+pipe-file ./tmp/.env.* cat {}
 
 terminate "${?}" "PASS" "FAIL"

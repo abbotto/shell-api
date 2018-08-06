@@ -39,10 +39,14 @@
 
 - Recursively find files and pipe them through a command.
 - Will return the exit code of the selected command.
+- Reference a filename with the `{}` placeholder and the command will be called for each file.
+  - `<COMMAND> file1, <COMMAND> file2, <COMMAND> fileN...`
+- If the `{}` placeholder is omitted the command will run against as many files as possible.
+  - `<COMMAND> file1 file2 fileN...`
 - Pass the `auth` flag for `sudo` privileges.
 
       Usage: pipe-file <OPTIONAL[-a, --auth]> <OPTIONAL[DEPTH_INT]> <FILE_PATH_PATTERN> <COMMAND>
-      Example: pipe-file "/tmp/*.log" cat
+      Example: pipe-file "/tmp/*.log" cat {}
 
 [source code](../shell/pipe-file)
 
