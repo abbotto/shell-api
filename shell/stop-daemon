@@ -2,6 +2,8 @@
 
 # Usage: doc/api.md#stop-daemon
 
+# Create an alias
+. ./shell/common/expand-aliases
 alias stop-daemon="stop_daemon"
 
 stop_daemon(){
@@ -14,7 +16,6 @@ stop_daemon(){
     elif [ ! -f "${PID_PATH}" ]; then
         echo "Cannot stop '${1}' - no such process"
         return 127
-
     else
         # Kill the process
         PID=$(cat "${PID_PATH}")
@@ -23,6 +24,5 @@ stop_daemon(){
         # Cleanup the tmp files
         rm -rf "/tmp/shell-api/${1}.log"
         rm -rf "/tmp/shell-api/${1}.pid"
-
     fi
 }

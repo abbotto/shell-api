@@ -2,6 +2,8 @@
 
 # Usage: doc/api.md#write-file
 
+# Create an alias
+. ./shell/common/expand-aliases
 alias write-file="write_file"
 
 write_file(){
@@ -10,13 +12,11 @@ write_file(){
     if [ -z "${1}" ]; then
         echo "write-file: arguments are missing"
         return 127
-
     fi
 
     if [ "${1}" = "-a" ] || [ "${1}" = "--auth" ]; then
         SUDO="sudo "
         shift $(( $# > 0 ? 1 : 0 ))
-
     fi
 
     if [ ! -f "${1}" ]; then

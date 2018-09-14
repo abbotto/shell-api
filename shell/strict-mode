@@ -5,13 +5,26 @@
 # Force POSIX-compliant behaviour
 POSIXLY_CORRECT=1;
 
-# Disable brace expansion
-# Enable alias expansion
-if [ -n "$(! set +B >/dev/null 2>&1)" ]; then
-    set +B
-    eval "shopt -s expand_aliases"
+# --------------------------
+# START Bash-specific rules
+# --------------------------
+CURRENT_SHELL=$(ps -p $$ -oargs=)
 
+if [ -n "$(! set +B >/dev/null 2>&1)" ]; then
+    # Disable brace expansion
+    set +B
 fi
+
+if test "${CURRENT_SHELL#*bash}" != "$CURRENT_SHELL"; then
+    # Prevent errors in a pipeline from being masked
+    set -o pipefail
+
+    # Expand aliases
+    eval "shopt -s expand_aliases"
+fi
+# --------------------------
+# END Bash-specific rules
+# --------------------------
 
 # '-e' instructs the shell to exit if a command has a non-zero exit status
 # '-u' throws an error if an undefined variable is referenced

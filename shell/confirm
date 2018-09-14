@@ -6,7 +6,6 @@ confirm(){
     if [ -z "${1}" ]; then
         echo "confirm: arguments are missing"
         return 127
-
     else
         QUESTION="${1}"
         YES_CALLBACK="${2}"
@@ -24,10 +23,8 @@ confirm(){
         # Respond to input
         if echo "$response" | grep -iq "^y"; then
             "${YES_CALLBACK}"
-
         elif [ -n "${2}" ]; then
             "${NO_CALLBACK}"
-
         fi
     
     fi

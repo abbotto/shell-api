@@ -1,0 +1,58 @@
+#!/usr/bin/env sh
+
+. shell/print-text
+. shell/terminate
+. shell/export-file
+
+echo ""
+print-text 12 "Checking if the 'export-file' function works..."
+echo ""
+
+EXIT_CODE=0
+SCRIPT_PATH=$(cd "$(dirname "${0}")" || .; pwd)
+MULTI_LINE_ENCODED="multi\\\nline\\\nstring"
+
+MULTI_LINE_SINGLE_QUOTE='multi
+line
+string?q=test'
+
+MULTI_LINE_DOUBLE_QUOTE="multi
+line
+string?q=test"
+
+test_var(){
+    VALUE=$(eval printf '%s\\n' "\$${1}")
+    
+    if [ "${VALUE}" != "${2}" ]; then
+        EXIT_CODE=127;
+
+        print-text 9 "| The '${1}' variable has an unexpected value"
+        print-text 8 "| Received value: $(print-text 10 "${2}")"
+        print-text 8 "| Expected value: $(print-text 10 "${VALUE}")"
+        echo ""
+    fi
+}
+
+# Do not overwrite previously exported variables
+export-file "${SCRIPT_PATH}"/export-file.env.00
+export-file "${SCRIPT_PATH}"/export-file.env.01
+test_var 'ENV_VAR' 'FOO1'
+test_var 'ENV_VAR_EMPTY' ''
+test_var 'ENV_VAR_WITH_EQUALS' 'foo2=qwerty'
+test_var 'ENV_VAR_DOUBLE_QUOTES' 'FOO3'
+test_var 'ENV_VAR_SINGLE_QUOTES' 'FOO4'
+test_var 'ENV_VAR_NESTED_SINGLE_QUOTES' "'foo5'"
+test_var 'ENV_VAR_NESTED_DOUBLE_QUOTES' '"foo6"'
+test_var 'ENV_VAR_COMMAND' 'FOO7'
+test_var 'ENV_VAR_MULTI_LINE_ENCODED' "${MULTI_LINE_ENCODED}"
+test_var 'ENV_VAR_MULTI_LINE_SINGLE_QUOTE' "${MULTI_LINE_SINGLE_QUOTE}"
+test_var 'ENV_VAR_MULTI_LINE_DOUBLE_QUOTE' "${MULTI_LINE_DOUBLE_QUOTE}"
+
+# Overwrite previously exported variables
+export-file --force "${SCRIPT_PATH}"/export-file.env.01
+test_var 'ENV_VAR' 'foo1'
+test_var 'ENV_VAR_DOUBLE_QUOTES' 'foo3'
+test_var 'ENV_VAR_SINGLE_QUOTES' 'foo4'
+test_var 'ENV_VAR_COMMAND' 'foo7'
+
+terminate "${EXIT_CODE}" "PASS" "FAIL"

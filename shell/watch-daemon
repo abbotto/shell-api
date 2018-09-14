@@ -2,6 +2,8 @@
 
 # Usage: doc/api.md#watch-daemon
 
+# Create an alias
+. ./shell/common/expand-aliases
 alias watch-daemon="watch_daemon"
 
 watch_daemon(){
@@ -14,7 +16,6 @@ watch_daemon(){
     elif [ "${1}" = "-n" ] || [ "${1}" = "--no-follow" ]; then
         OPTIONS=""
         shift $(( $# > 0 ? 1 : 0 ))
-    
     fi
 
     LOG_PATH="/tmp/shell-api/${1}.log"
@@ -22,9 +23,7 @@ watch_daemon(){
     if [ ! -f "${LOG_PATH}" ]; then
         echo "Cannot show output for '${1}' - no such process"
         return 127
-
     else
         tail"${OPTIONS}" "${LOG_PATH}"
-    
     fi
 }

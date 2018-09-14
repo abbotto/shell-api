@@ -10,27 +10,23 @@ require(){
     if [ -z "${1}" ]; then
         echo "require: arguments are missing"
         return 127
-
     fi
 
 	if [ -n "$(command -v "${1}")" ]; then IS_CMD=true;
 	elif [ -f "${1}" ]; then
 		head -n1 "${1}" | grep -q '^#!'
 		if [ $? = 0 ]; then IS_SCRIPT=true; fi
-
 	fi
 
 	if [ -z "${IS_CMD}" ] && [ -z "${IS_SCRIPT}" ]; then
 		echo "Required resource not found: '${1}'"
 		if [ -n "${MESSAGE}" ]; then echo "${MESSAGE}"; fi
 		return 127
-
 	fi
 
 	if [ -z "${IS_CMD}" ]; then
 		. "${1}"
 
 		if [ "${?}" != 0 ]; then exit "${?}"; fi
-
 	fi
 }

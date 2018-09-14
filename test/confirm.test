@@ -1,13 +1,12 @@
 #!/usr/bin/env sh
 
 . shell/print-text
+. shell/terminate
+. shell/confirm
 
 echo ""
 print-text 12 "Checking if the 'confirm' function fails properly..."
 echo ""
-
-. shell/terminate
-. shell/confirm
 
 confirm >/dev/null 2>&1
 

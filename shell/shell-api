@@ -1,13 +1,13 @@
 #!/usr/bin/env sh
 
-SHELL_API_PATH="${SHELL_API_PATH}"
+SHELL_API_PATH="${SHELL_API_PATH:-'./shell'}"
 
 # Enable strict mode
 . "${SHELL_API_PATH}"/strict-mode
 
 # Load dependencies
 . "${SHELL_API_PATH}"/confirm
-. "${SHELL_API_PATH}"/import
+. "${SHELL_API_PATH}"/export-file
 . "${SHELL_API_PATH}"/join-file
 . "${SHELL_API_PATH}"/pipe-file
 . "${SHELL_API_PATH}"/print-text

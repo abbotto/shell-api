@@ -1,13 +1,11 @@
 #!/usr/bin/env sh
 
 . shell/print-text
+. shell/terminate
+. shell/watch-daemon
 
 echo ""
 print-text 12 "Checking if the 'watch-daemon' function works..."
-
-. shell/strict-mode
-. shell/terminate
-. shell/watch-daemon
 
 echo ""
 watch-daemon -n daemon_test

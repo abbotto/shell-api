@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 
+. ./shell/strict-mode
+
 EXIT_CODE=0
 PASS_COUNT=0
 FAIL_COUNT=0
@@ -9,10 +11,8 @@ mkdir -p ./tmp
 capture_exit_code(){
     if [ "${?}" = 0 ]; then
         PASS_COUNT=$((PASS_COUNT+1))
-
     else
         FAIL_COUNT=$((FAIL_COUNT+1))
-
     fi
 
     EXIT_CODE="$((EXIT_CODE + ${?}))"
@@ -30,7 +30,7 @@ chmod +x ./tmp/daemon_test
 ./test/confirm.test
 capture_exit_code
 
-./test/import.test
+./test/export-file.test
 capture_exit_code
 
 ./test/join-file.test
@@ -69,7 +69,4 @@ rm -rf ./tmp
 
 if [ "${EXIT_CODE}" != 0 ]; then
     exit 1
-
 fi
-
-exit 0

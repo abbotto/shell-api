@@ -6,7 +6,6 @@ terminate(){
     if [ -z "${1}" ]; then
         echo "terminate: arguments are missing"
         return 127
-
     fi
 
 	GREEN=$(tput setaf 2)

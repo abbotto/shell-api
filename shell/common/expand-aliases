@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+
+# Internal helper function
+
+# Expand aliases in BASH
+CURRENT_SHELL=$(ps -p $$ -oargs=)
+
+if test "${CURRENT_SHELL#*bash}" != "$CURRENT_SHELL"; then
+    eval "shopt -s expand_aliases"
+fi

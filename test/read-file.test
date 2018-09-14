@@ -1,13 +1,11 @@
 #!/usr/bin/env sh
 
 . shell/print-text
+. shell/terminate
+. shell/read-file
 
 echo ""
 print-text 12 "Checking if the 'read-file' function works..."
-
-. shell/strict-mode
-. shell/terminate
-. shell/read-file
 
 echo ""
 read-file ./tmp/.env.test

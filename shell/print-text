@@ -2,14 +2,14 @@
 
 # Usage: doc/api.md#print-text
 
-alias print-text="print_text"
+# Create an alias
+. ./shell/common/expand-aliases
+alias print-text='print_text'
 
 print_text(){
-
     if [ -z "${1}" ]; then
         echo "print-text: arguments are missing"
         return 127
-
     fi
 
 	START=$(tput setaf "${1}")

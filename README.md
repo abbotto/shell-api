@@ -16,7 +16,7 @@ All functions have been tested in `bash`, `dash`, `ksh`, and `zsh`.
 
 ### The API
 - [confirm](doc/api.md#confirm)
-- [import](doc/api.md#import)
+- [export-file](doc/api.md#export-file)
 - [join-file](doc/api.md#join-file)
 - [pipe-file](doc/api.md#pipe-file)
 - [print-text](doc/api.md#print-text)
@@ -35,9 +35,9 @@ All functions have been tested in `bash`, `dash`, `ksh`, and `zsh`.
 
 ### Install
 
-- Install this project as an `npm` module.
+- Install this project via `npm`.
 
-      npm i shell-api
+      npm i shell-api --save
 
 - Symlink the `shell` directory within a project.
 
@@ -55,7 +55,7 @@ All functions have been tested in `bash`, `dash`, `ksh`, and `zsh`.
     # Load the whole framework at once
     . "${SHELL_API_PATH}"/shell-api
 
-    import ./.env
+    export-file ./.env
     require <SCRIPT>
 
     ...
@@ -67,12 +67,12 @@ All functions have been tested in `bash`, `dash`, `ksh`, and `zsh`.
     SCRIPT_PATH=$(cd "$(dirname "${0}")"; pwd)
     SHELL_API_PATH="${SCRIPT_PATH}/../.shell"
 
-    # Load specific parts of the framework
+    # Selectively load parts of the framework
     . "${SHELL_API_PATH}"/strict-mode
-    . "${SHELL_API_PATH}"/import
+    . "${SHELL_API_PATH}"/export-file
     . "${SHELL_API_PATH}"/require
 
-    import ./.env
+    export-file ./.env
     require <SCRIPT>
 
     ...

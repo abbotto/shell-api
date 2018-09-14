@@ -1,0 +1,45 @@
+#!/usr/bin/env sh
+
+# Usage: doc/api.md#export-file
+
+# Create an alias
+. ./shell/common/expand-aliases
+alias export-file="export_file"
+
+export_file(){
+    if [ -z "${1}" ]; then
+        printf '%s\n' "export-file: arguments are missing"
+        return 127
+    fi
+
+	PROCESS_ENV_FILE=''
+
+	# Use the '-f' or '--force'  flag to
+	# overwrite previously exported variables
+	if [ "$1" = "-f" ] || [ "$1" = "--force" ] ; then
+		shift $(( $# > 0 ? 1 : 0 ))
+	else
+		PROCESS_ENV_FILE=$(mktemp)
+	fi
+
+	INPUT_ENV_FILE="${1}"
+
+	if [ ! -f "${INPUT_ENV_FILE}" ]; then
+		printf '%s\n' "Required resource not found: '${INPUT_ENV_FILE}'"
+	else
+		# Cache existing exported vars in a file so they can be preserved
+		# Calling 'set' in POSIX mode returns a list of exported variables
+		if [ -n "${PROCESS_ENV_FILE}" ]; then set > "${PROCESS_ENV_FILE}"; fi
+
+		# Export the target variables
+		set -a
+			. "$INPUT_ENV_FILE"
+
+			# Restore previously exported variables that belong to the current process
+			if [ -n "${PROCESS_ENV_FILE}" ]; then . "${PROCESS_ENV_FILE}"; fi
+		set +a
+
+		# Cleanup
+		rm -rf "${PROCESS_ENV_FILE}"
+	fi
+}

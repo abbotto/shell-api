@@ -2,6 +2,8 @@
 
 # Usage: doc/api.md#start-daemon
 
+# Create an alias
+. ./shell/common/expand-aliases
 alias start-daemon="start_daemon"
 
 start_daemon(){
@@ -10,7 +12,6 @@ start_daemon(){
     if [ -z "${1}" ]; then
         echo "start-daemon: arguments are missing"
         return 127
-
     else
         LOG_ID="${1}"
         shift $(( $# > 0 ? 1 : 0 ))
@@ -19,6 +20,5 @@ start_daemon(){
         # Write a log file and a process id file
         nohup "${*}" > "/tmp/shell-api/${LOG_ID}.log" >/dev/null 2>&1 & \
         echo "${!}" > "/tmp/shell-api/${LOG_ID}.pid"
-    
     fi
 }

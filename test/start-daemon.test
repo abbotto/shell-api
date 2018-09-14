@@ -1,13 +1,11 @@
 #!/usr/bin/env sh
 
 . shell/print-text
+. shell/terminate
+. shell/start-daemon
 
 echo ""
 print-text 12 "Checking if the 'start-daemon' function works..."
-
-. shell/strict-mode
-. shell/terminate
-. shell/start-daemon
 
 echo ""
 start-daemon daemon_test ./tmp/daemon_test
@@ -17,7 +15,6 @@ PID=$(cat /tmp/shell-api/daemon_test.pid)
 
 if [ -z "${PID}" ]; then
     EXIT_CODE=127
-
 fi
 
 terminate "${EXIT_CODE}" "PASS" "FAIL"

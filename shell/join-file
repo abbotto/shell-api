@@ -2,6 +2,8 @@
 
 # Usage: doc/api.md#join-file
 
+# Create an alias
+. ./shell/common/expand-aliases
 alias join-file="join_file"
 
 join_file(){
@@ -13,32 +15,29 @@ join_file(){
     if [ -z "${1}" ]; then
         echo "join-file: arguments are missing"
         return 127
-
     fi
 
     if [ "${1}" = "-a" ] || [ "${1}" = "--auth" ]; then
         SUDO="sudo "
         shift $(( $# > 0 ? 1 : 0 ))
-
     fi
 
+    # 2 files
     if [ -f "${1}" ] && [ -f "${2}" ]; then
         A=$(awk '1' "${1}")
         B=$(awk '1' "${2}")
-
+    # File and string
     elif [ -f "${1}" ] && [ -n "${2}" ]; then
         A=$(awk '1' "${1}")
         B="${2}"
-
+    # String and file
     elif [ -f "${2}" ] && [ -n "${1}" ]; then
         A="${1}"
         B=$(awk '1' "${2}")
         TARGET="${2}"
-
     else
         echo "Cannot find target - no such file"
         return 127
-
     fi
 
 	echo "${A}${B}" | "${SUDO}"tee "${TARGET}" >/dev/null 2>&1

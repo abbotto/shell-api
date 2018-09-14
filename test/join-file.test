@@ -1,19 +1,16 @@
 #!/usr/bin/env sh
 
 . shell/print-text
+. shell/terminate
+. shell/join-file
 
 echo ""
 print-text 12 "Checking if the 'join-file' function works..."
-
-. shell/strict-mode
-. shell/terminate
-. shell/join-file
 
 mkdir -p ./tmp
 rm -rf "./tmp/join-file"
 touch ./tmp/join-file
 
-echo ""
 join-file "./tmp/join-file" "hello world"
 
 EXIT_CODE="${?}"

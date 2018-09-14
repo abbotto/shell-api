@@ -11,13 +11,17 @@
 
 ---
 
-## [import](#import)
+## [export-file](#export-file)
 
-- Fetch a `.env` file and export it's environment variables.
+- Safely export an environment variable file.
+  - Properly handles newlines, nested quotes, and embedded variables.
+  - Will not overwrite previously set variables in the current process unless the `--force` or `-f` flag is passed.
 
-      Usage: import <ENV>
+        Usage: export-file <PATH>
 
-[source code](../shell/import)
+               export-file -f <PATH>
+
+[source code](../shell/export-file)
 
 ---
 
@@ -111,6 +115,8 @@ Reference: [Wikipedia](https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit)
 
 - Force POSIX-compliant behaviour.
 - Disable brace expansion.
+- Prevent errors in a pipeline from being masked.
+- Expand aliases.
 - Exit if a command has a non-zero exit status.
 - Throws an error if an undefined variable is referenced.
 
