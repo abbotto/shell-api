@@ -12,7 +12,7 @@ A robust set of [POSIX-compliant](http://pubs.opengroup.org/onlinepubs/969991979
 
 The goal is to provide a simple API that is compatible with Bourne-like shells on *nix systems.
 
-All functions have been tested in `bash`, `dash`, `ksh`, and `zsh`.
+All functions have been tested in `bash`, `dash`, `fish`, `ksh`, and `zsh`.
 
 ### The API
 - [confirm](doc/api.md#confirm)
