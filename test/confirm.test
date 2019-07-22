@@ -10,13 +10,10 @@ echo ""
 
 confirm >/dev/null 2>&1
 
-EXIT_CODE="${?}"
+exit_code="${?}"
 
-echo "EXIT CODE: ${EXIT_CODE}"
-
-if [ "${EXIT_CODE}" = 127 ]; then
-    EXIT_CODE=0
-
+if [ "${exit_code}" = 127 ]; then
+    exit_code=0
 fi
 
-terminate "${EXIT_CODE}" "PASS" "FAIL"
+terminate "${exit_code}" "PASS" "FAIL"
