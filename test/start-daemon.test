@@ -10,11 +10,11 @@ print-text 12 "Checking if the 'start-daemon' function works..."
 echo ""
 start-daemon daemon_test ./tmp/daemon_test
 
-EXIT_CODE="${?}"
-PID=$(cat /tmp/shell-api/daemon_test.pid)
+exit_code="${?}"
+pid=$(cat /tmp/shell-api/daemon_test.pid)
 
-if [ -z "${PID}" ]; then
-    EXIT_CODE=127
+if [ -z "${pid}" ]; then
+    exit_code=127
 fi
 
-terminate "${EXIT_CODE}" "PASS" "FAIL"
+terminate "${exit_code}" "PASS" "FAIL"

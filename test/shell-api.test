@@ -1,28 +1,28 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 . ./shell/strict-mode
 
-EXIT_CODE=0
-PASS_COUNT=0
-FAIL_COUNT=0
+exit_code=0
+pass_count=0
+fail_count=0
 
 mkdir -p ./tmp
 
 capture_exit_code(){
     if [ "${?}" = 0 ]; then
-        PASS_COUNT=$((PASS_COUNT+1))
+        pass_count=$((pass_count+1))
     else
-        FAIL_COUNT=$((FAIL_COUNT+1))
+        fail_count=$((fail_count+1))
     fi
 
-    EXIT_CODE="$((EXIT_CODE + ${?}))"
+    exit_code="$((exit_code + ${?}))"
 }
 
 # Generate a temporary 'env' file
 echo 'HELLO="WORLD"' | tee ./tmp/.env.test >/dev/null 2>&1
 
 # Generate a temporary 'daemon' script
-echo '#!/usr/bin/env sh' | tee ./tmp/daemon_test >/dev/null 2>&1
+echo "#!/usr/bin/env ${current_shell}" | tee ./tmp/daemon_test >/dev/null 2>&1
 echo 'ping -c 255 127.0.0.1' | tee -a ./tmp/daemon_test >/dev/null 2>&1
 chmod +x ./tmp/daemon_test
 
@@ -62,11 +62,11 @@ capture_exit_code
 
 echo ""
 echo "---------------------"
-echo "${PASS_COUNT} passed, ${FAIL_COUNT} failed"
+echo "${pass_count} passed, ${fail_count} failed"
 echo "---------------------"
 
 rm -rf ./tmp
 
-if [ "${EXIT_CODE}" != 0 ]; then
+if [ "${exit_code}" != 0 ]; then
     exit 1
 fi
