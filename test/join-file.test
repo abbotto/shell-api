@@ -13,8 +13,6 @@ touch ./tmp/join-file
 
 join-file "./tmp/join-file" "hello world"
 
-EXIT_CODE="${?}"
+exit_code="${?}"
 
-cat ./tmp/join-file
-
-terminate "${EXIT_CODE}" "PASS" "FAIL"
+terminate "${exit_code}" "PASS" "FAIL"
