@@ -8,6 +8,12 @@ echo ""
 print-text 12 "Checking if the 'pipe-file' function works..."
 
 echo ""
-pipe-file ./tmp/.env.* cat {}
 
-terminate "${?}" "PASS" "FAIL"
+cmd="$(pipe-file ./tmp/.env.* cat {})"
+exit_code=1
+
+if [ "${cmd}" = 'HELLO="WORLD"' ]; then
+    exit_code=0
+fi
+
+terminate "${exit_code}" "PASS" "FAIL"
