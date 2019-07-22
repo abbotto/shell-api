@@ -1,7 +1,7 @@
 {
   "name": "shell-api",
-  "version": "1.0.0",
-  "description": "A POSIX-compliant framework for shell scripts",
+  "version": "1.1.0",
+  "description": "A robust set of POSIX-compliant scripts for shell environments",
   "main": "shell/shell-api",
   "scripts": {
     "lint": "./tool/lint --sh && ./tool/lint --yml",
