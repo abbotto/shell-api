@@ -1,7 +1,0 @@
-#!/usr/bin/env ksh
-
-sed -i 's|env sh|env ksh|g' ./test/shell-api.test
-
-. ./test/shell-api.test
-
-sed -i 's|env ksh|env sh|g' ./test/shell-api.test

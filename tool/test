@@ -1,25 +1,19 @@
 #!/usr/bin/env sh
 
-echo ""
-echo "--------------------------"
-echo "Testing in 'BASH' shell..."
-echo "--------------------------"
-./test/bash.test
+shells=bash,dash,ksh,zsh
 
-echo ""
-echo "--------------------------"
-echo "Testing in 'DASH' shell..."
-echo "--------------------------"
-./test/dash.test
+for current_shell in $(echo "${shells}" | sed "s/,/ /g"); do
+    echo ""
+    echo "--------------------------"
+    echo "Testing in '${current_shell}' shell..."
+    echo "--------------------------"
 
-echo ""
-echo "--------------------------"
-echo "Testing in 'KSH' shell..."
-echo "--------------------------"
-./test/ksh.test
 
-echo ""
-echo "--------------------------"
-echo "Testing in 'ZSH' shell..."
-echo "--------------------------"
-./test/zsh.test
+    if [ "${current_shell}" = 'dash' ]; then
+        . ./test/shell-api.test
+    else
+        sed -i "s|env sh|env ${current_shell}|g" ./test/shell-api.test
+        . ./test/shell-api.test
+        sed -i "s|env ${current_shell}|env sh|g" ./test/shell-api.test
+    fi
+done

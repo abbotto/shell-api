@@ -1,7 +1,0 @@
-#!/usr/bin/env zsh
-
-sed -i 's|env sh|env zsh|g' ./test/shell-api.test
-
-. ./test/shell-api.test
-
-sed -i 's|env zsh|env sh|g' ./test/shell-api.test

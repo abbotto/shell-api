@@ -1,3 +1,0 @@
-#!/usr/bin/env dash
-
-. ./test/shell-api.test

@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-sed -i 's|env sh|env bash|g' ./test/shell-api.test
-
-. ./test/shell-api.test
-
-sed -i 's|env bash|env sh|g' ./test/shell-api.test
