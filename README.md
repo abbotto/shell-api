@@ -6,7 +6,7 @@
 
 ## Overview
 
-A [POSIX-compliant](http://pubs.opengroup.org/onlinepubs/9699919799/) framework for shell scripts.
+A robust set of [POSIX-compliant](http://pubs.opengroup.org/onlinepubs/9699919799/) scripts for shell environments.
 
 ### Shell support
 
