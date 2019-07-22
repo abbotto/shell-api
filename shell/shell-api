@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-shell_api_path="${shell_api_path:-'./shell'}"
+shell_api_path="${SHELL_API_PATH:-'./shell'}"
 
 # Enable strict mode
 . "${shell_api_path}"/strict-mode
