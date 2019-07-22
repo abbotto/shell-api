@@ -32,7 +32,8 @@ A good bug report should contain some or all of the following information:
 ### Use semantic commit messages
 
 - `build`: Changes to the build system and external dependencies.
-- `ci`: Changes to the CI files.
+- `bump`: Version updates.
+- `deploy`: Changes to the deployment files.
 - `doc`: Changes to the documentation.
 - `feat`: Add new behaviour to the code.
 - `fix`: Fix malfunctioning code.
@@ -47,7 +48,7 @@ feat: do all the things
 |     |
 |     +-> Summary in present tense.
 |
-+-------> Type: build, ci, doc, feat, fix, perf, refactor, style, or test.
++-------> Type: build, bump, deploy, doc, feat, fix, perf, refactor, style, or test.
 ```
 
 ### Keep the documentation up-to-date
