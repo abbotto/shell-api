@@ -12,34 +12,45 @@ export_file(){
         return 127
     fi
 
-	PROCESS_ENV_FILE=''
-
+	target_env_file=$(mktemp)
+	shell_env_file=$(mktemp)
+	
 	# Use the '-f' or '--force'  flag to
 	# overwrite previously exported variables
 	if [ "$1" = "-f" ] || [ "$1" = "--force" ] ; then
 		shift $(( $# > 0 ? 1 : 0 ))
-	else
-		PROCESS_ENV_FILE=$(mktemp)
+		eval "rm -rf ${shell_env_file}"
+		unset shell_env_file
 	fi
 
-	INPUT_ENV_FILE="${1}"
+	# Loop over input files
+	while [ -n "${1:-}" ]; do
+    	input_env_file="${1}"
+    	shift $(( $# > 0 ? 1 : 0 ))
 
-	if [ ! -f "${INPUT_ENV_FILE}" ]; then
-		printf '%s\n' "Required resource not found: '${INPUT_ENV_FILE}'"
-	else
-		# Cache existing exported vars in a file so they can be preserved
-		# Calling 'set' in POSIX mode returns a list of exported variables
-		if [ -n "${PROCESS_ENV_FILE}" ]; then set > "${PROCESS_ENV_FILE}"; fi
+		if [ ! -f "${input_env_file}" ]; then
+			printf '%s\n' "Required resource not found: '${input_env_file}'"
+		else
+			# Cache existing exported vars in a file so they can be preserved
+			# Calling 'set' in POSIX mode returns a list of shell variables
+			if [ -n "${shell_env_file}" ]; then set > "${shell_env_file}"; fi
+			
+			# Remove leading whitespace from unquoted values
+			cat "${input_env_file}" | \
+			sed -r 's|(=\s\s+)[^A-z0-9_]*|=|g' | \
+			tee "${target_env_file}" >/dev/null 2>&1
 
-		# Export the target variables
-		set -a
-			. "$INPUT_ENV_FILE"
+			# Export the target variables
+			set -a
+				. "${target_env_file}"
 
-			# Restore previously exported variables that belong to the current process
-			if [ -n "${PROCESS_ENV_FILE}" ]; then . "${PROCESS_ENV_FILE}"; fi
-		set +a
+				# Restore previously exported variables that belong to the current process
+				if [ -n "${shell_env_file}" ]; then . "${shell_env_file}"; fi
+			set +a
+		fi
+	done
 
-		# Cleanup
-		rm -rf "${PROCESS_ENV_FILE}"
-	fi
+	# Cleanup
+	rm -rf "${target_env_file}"
+	rm -rf "${shell_env_file}"
 }

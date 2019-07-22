@@ -8,51 +8,59 @@ echo ""
 print-text 12 "Checking if the 'export-file' function works..."
 echo ""
 
-EXIT_CODE=0
-SCRIPT_PATH=$(cd "$(dirname "${0}")" || .; pwd)
-MULTI_LINE_ENCODED="multi\\\nline\\\nstring"
+exit_code=0
+script_path=$(cd "$(dirname "${0}")" || .; pwd)
+multi_line_encoded="multi\\nline\\nstring"
 
-MULTI_LINE_SINGLE_QUOTE='multi
+multi_line_single_quote='multi
 line
-string?q=test'
+string?q=abc123'
 
-MULTI_LINE_DOUBLE_QUOTE="multi
+multi_line_double_quote="multi
 line
-string?q=test"
+string?q=abc123"
 
-test_var(){
-    VALUE=$(eval printf '%s\\n' "\$${1}")
-    
-    if [ "${VALUE}" != "${2}" ]; then
-        EXIT_CODE=127;
+expect_value(){
+    value=$(eval printf '%s\\n' "\$${1}")
+
+    if [ "${value}" != "${2}" ]; then
+        exit_code=127;
 
         print-text 9 "| The '${1}' variable has an unexpected value"
-        print-text 8 "| Received value: $(print-text 10 "${2}")"
-        print-text 8 "| Expected value: $(print-text 10 "${VALUE}")"
+        print-text 8 "| Expected: $(print-text 10 "${2}")"
+        print-text 8 "| Received: $(print-text 10 "${value}")"
         echo ""
     fi
 }
 
 # Do not overwrite previously exported variables
-export-file "${SCRIPT_PATH}"/export-file.env.00
-export-file "${SCRIPT_PATH}"/export-file.env.01
-test_var 'ENV_VAR' 'FOO1'
-test_var 'ENV_VAR_EMPTY' ''
-test_var 'ENV_VAR_WITH_EQUALS' 'foo2=qwerty'
-test_var 'ENV_VAR_DOUBLE_QUOTES' 'FOO3'
-test_var 'ENV_VAR_SINGLE_QUOTES' 'FOO4'
-test_var 'ENV_VAR_NESTED_SINGLE_QUOTES' "'foo5'"
-test_var 'ENV_VAR_NESTED_DOUBLE_QUOTES' '"foo6"'
-test_var 'ENV_VAR_COMMAND' 'FOO7'
-test_var 'ENV_VAR_MULTI_LINE_ENCODED' "${MULTI_LINE_ENCODED}"
-test_var 'ENV_VAR_MULTI_LINE_SINGLE_QUOTE' "${MULTI_LINE_SINGLE_QUOTE}"
-test_var 'ENV_VAR_MULTI_LINE_DOUBLE_QUOTE' "${MULTI_LINE_DOUBLE_QUOTE}"
+export-file \
+    "${script_path}"/export-file.env.00 \
+    "${script_path}"/export-file.env.01
+
+expect_value 'ENV_VAR' 'FOO1'
+expect_value 'ENV_VAR_COMMAND' 'FOO7'
+expect_value 'ENV_VAR_DQ_WRAP' 'FOO3'
+expect_value 'ENV_VAR_DQ_WRAP_JSON_ESCAPE_NESTED_SQ' "{\'foo\':\'bar\'}"
+expect_value 'ENV_VAR_DQ_WRAP_JSON_NESTED_DQ' '{foo:bar}'
+expect_value 'ENV_VAR_DQ_WRAP_MULTI_LINE' "${multi_line_double_quote}"
+expect_value 'ENV_VAR_DQ_WRAP_NESTED_SQ' "'foo5'"
+expect_value 'ENV_VAR_EMPTY' ''
+expect_value 'ENV_VAR_ENCODED' 'foo\sbar'
+expect_value 'ENV_VAR_ENCODED_MULTI_LINE' "${multi_line_encoded}"
+expect_value 'ENV_VAR_SQ_WRAP' 'FOO4'
+expect_value 'ENV_VAR_SQ_WRAP_JSON_ESCAPE_NESTED_DQ' '{\"foo\":\"bar\"}'
+expect_value 'ENV_VAR_SQ_WRAP_JSON_NESTED_SQ' '{foo:bar}'
+expect_value 'ENV_VAR_SQ_WRAP_MULTI_LINE' "${multi_line_single_quote}"
+expect_value 'ENV_VAR_SQ_WRAP_NESTED_DQ' '"foo6"'
+expect_value 'ENV_VAR_TRIM_WHITESPACE' 'foo8'
+expect_value 'ENV_VAR_WITH_EQUALS' 'foo2=qwerty'
 
 # Overwrite previously exported variables
-export-file --force "${SCRIPT_PATH}"/export-file.env.01
-test_var 'ENV_VAR' 'foo1'
-test_var 'ENV_VAR_DOUBLE_QUOTES' 'foo3'
-test_var 'ENV_VAR_SINGLE_QUOTES' 'foo4'
-test_var 'ENV_VAR_COMMAND' 'foo7'
+export-file --force "${script_path}"/export-file.env.01
+expect_value 'ENV_VAR' 'foo1'
+expect_value 'ENV_VAR_COMMAND' 'foo7'
+expect_value 'ENV_VAR_DQ_WRAP' 'foo3'
+expect_value 'ENV_VAR_SQ_WRAP' 'foo4'
 
-terminate "${EXIT_CODE}" "PASS" "FAIL"
+terminate "${exit_code}" "PASS" "FAIL"

@@ -14,13 +14,55 @@
 ## [export-file](#export-file)
 
 - Safely export an environment variable file.
-  - Properly handles newlines, nested quotes, and embedded variables.
   - Will not overwrite previously set variables in the current process unless the `--force` or `-f` flag is passed.
 
-        Usage: export-file <PATH>
+        Usage: export-file <FILE_1> <FILE_2> <FILE_3>...
 
-               export-file -f <PATH>
+               export-file -f <FILE>
 
+### Parsing rules
+
+- Comments are ignored
+- Empty lines are ignored
+
+- Empty values become empty strings
+
+      FOO= -> FOO=""
+
+- Escaped characters are preserved when properly wrapped
+
+      var="foo\sbar"
+      var="{\'foo\':\'bar\'}"
+      var='{\"foo\":\"bar\"}'
+
+- Newlines are preserved when quoted
+
+      var="multi
+      line
+      string?query=abc123"
+
+      var='multi
+      line
+      string?query=abc123'
+
+- Single-quotes and double-quotes are preserved when properly wrapped
+
+      var='{"foo":"bar"}' -> var='{"foo":"bar"}'
+      var="{'foo':'bar'}" -> var="{'foo':'bar'}"
+
+- Whitespace is trimmed from unquoted values
+      
+      var=  foobar   -> var=foobar
+
+- Unescaped nested quotes are removed
+      
+      var='{'foo':'bar'}' -> var={foo:bar}
+      var="{"foo":"bar"}" -> var={foo:bar}
+
+- The output from command substitution will become the assigned value
+
+      var="$(echo 'foobar')" -> var="foobar"
+      
 [source code](../shell/export-file)
 
 ---
