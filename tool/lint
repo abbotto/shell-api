@@ -24,8 +24,10 @@ if [ "${1}" = "--sh" ]; then
     -e SC2181 \
     -e SC2185"
 
-    RUN_SHELLCHECK="shellcheck ${ALLOW_EXTERNAL_SOURCE} ${SHELLCHECK_OPTS} {} +"
-    eval "find ./test ./tool ./shell -type f -exec ${RUN_SHELLCHECK}"
+    export SHELLCHECK_OPTS
+
+    run_shellcheck="shellcheck ${ALLOW_EXTERNAL_SOURCE} ${SHELLCHECK_OPTS} {} +"
+    eval "find ./test ./tool ./shell -type f -exec ${run_shellcheck}"
 fi
 
 terminate "${?}" "PASS" "FAIL"
