@@ -2,18 +2,19 @@
 
 shells=bash,dash,fish,ksh,zsh
 
-for current_shell in $(echo "${shells}" | sed "s/,/ /g"); do
+for SHELL_API_ENV in $(echo "${shells}" | sed "s/,/ /g"); do
     echo ""
     echo "--------------------------"
-    echo "Testing in '${current_shell}' shell..."
+    echo "Testing in '${SHELL_API_ENV}' shell..."
     echo "--------------------------"
 
+    export SHELL_API_ENV
 
-    if [ "${current_shell}" = 'dash' ]; then
+    if [ "${SHELL_API_ENV}" = 'dash' ]; then
         . ./test/shell-api.test
     else
-        sed -i "s|env sh|env ${current_shell}|g" ./test/shell-api.test
+        sed -i "s|env sh|env ${SHELL_API_ENV}|g" ./test/shell-api.test
         . ./test/shell-api.test
-        sed -i "s|env ${current_shell}|env sh|g" ./test/shell-api.test
+        sed -i "s|env ${SHELL_API_ENV}|env sh|g" ./test/shell-api.test
     fi
 done

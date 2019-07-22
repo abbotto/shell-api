@@ -3,8 +3,8 @@
 # Internal helper function
 
 # Expand aliases in BASH
-current_shell=$(ps -p $$ -oargs=)
+shell_api_env=$(ps -p $$ -oargs=)
 
-if test "${current_shell#*bash}" != "$current_shell"; then
+if test "${shell_api_env#*bash}" != "$shell_api_env"; then
     eval "shopt -s expand_aliases"
 fi

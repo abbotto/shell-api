@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 . ./shell/strict-mode
 
@@ -22,7 +22,7 @@ capture_exit_code(){
 echo 'HELLO="WORLD"' | tee ./tmp/.env.test >/dev/null 2>&1
 
 # Generate a temporary 'daemon' script
-echo "#!/usr/bin/env ${current_shell}" | tee ./tmp/daemon_test >/dev/null 2>&1
+echo "#!/usr/bin/env ${SHELL_API_ENV}" | tee ./tmp/daemon_test >/dev/null 2>&1
 echo 'ping -c 255 127.0.0.1' | tee -a ./tmp/daemon_test >/dev/null 2>&1
 chmod +x ./tmp/daemon_test
 
@@ -61,9 +61,9 @@ capture_exit_code
 capture_exit_code
 
 echo ""
-echo "---------------------"
-echo "${pass_count} passed, ${fail_count} failed"
-echo "---------------------"
+echo "------------------------"
+echo "${SHELL_API_ENV}: ${pass_count} passed, ${fail_count} failed"
+echo "------------------------"
 
 rm -rf ./tmp
 
