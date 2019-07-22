@@ -49,11 +49,12 @@ All functions have been tested in `bash`, `dash`, `fish`, `ksh`, and `zsh`.
 
     #!/usr/bin/env sh
 
-    script_path=$(cd "$(dirname "${0}")"; pwd)
-    shell_api_path="${script_path}/../.shell"
+    SHELL_API_PATH="/path/to/.shell-api"
 
-    # Load the whole framework at once
-    . "${shell_api_path}"/shell-api
+    export SHELL_API_PATH
+
+    # Load all the scripts at once
+    . "${SHELL_API_PATH}"/shell-api
 
     export-file ./.env
     require <SCRIPT>
@@ -64,13 +65,14 @@ All functions have been tested in `bash`, `dash`, `fish`, `ksh`, and `zsh`.
 
     #!/usr/bin/env sh
 
-    script_path=$(cd "$(dirname "${0}")"; pwd)
-    shell_api_path="${script_path}/../.shell"
+    SHELL_API_PATH="/path/to/.shell-api"
 
-    # Selectively load parts of the framework
-    . "${shell_api_path}"/strict-mode
-    . "${shell_api_path}"/export-file
-    . "${shell_api_path}"/require
+    export SHELL_API_PATH
+
+    # Selectively load scripts
+    . "${SHELL_API_PATH}"/strict-mode
+    . "${SHELL_API_PATH}"/export-file
+    . "${SHELL_API_PATH}"/require
 
     export-file ./.env
     require <SCRIPT>
