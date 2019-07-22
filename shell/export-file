@@ -38,7 +38,7 @@ export_file(){
 			# Remove leading whitespace from unquoted values
 			# shellcheck disable=SC2002
 			cat "${input_env_file}" | \
-			sed -r 's|(=\s\s+)[^A-z0-9_]*|=|g' | \
+			sed -r 's|(=\s\s+)[^A-Za-z0-9_]*|=|g' | \
 			tee "${target_env_file}" >/dev/null 2>&1
 
 			# Export the target variables
