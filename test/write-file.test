@@ -10,8 +10,6 @@ print-text 12 "Checking if the 'write-file' function works..."
 echo ""
 write-file "./tmp/write-file" "hello world"
 
-EXIT_CODE="${?}"
+exit_code="${?}"
 
-cat ./tmp/write-file
-
-terminate "${EXIT_CODE}" "PASS" "FAIL"
+terminate "${exit_code}" "PASS" "FAIL"
