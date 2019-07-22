@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-shells=bash,dash,ksh,zsh
+shells=bash,dash,fish,ksh,zsh
 
 for current_shell in $(echo "${shells}" | sed "s/,/ /g"); do
     echo ""
