@@ -8,6 +8,12 @@ echo ""
 print-text 12 "Checking if the 'read-file' function works..."
 
 echo ""
-read-file ./tmp/.env.test
 
-terminate "${?}" "PASS" "FAIL"
+cmd="$(read-file ./tmp/.env.test)"
+exit_code=1
+
+if [ "${cmd}" = 'HELLO="WORLD"' ]; then
+    exit_code=0
+fi
+
+terminate "${exit_code}" "PASS" "FAIL"
