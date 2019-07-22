@@ -3,6 +3,23 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [1.1.0](https://github.com/abbotto/shell-api/releases/tag/v1.1.0) - 2019-07-22
+### Added
+- [export-file](doc/api.md#export-file)
+    - Accept multiple files as arguments.
+    - Trim whitespace from unquoted environment variables.
+- Increase the number of shells used for testing scripts.
+
+### Changed
+- Loop over shell environment list when testing intstead of using multiple files.
+- Renamed multiple variables.
+- Update the commit message types.
+- Update the documentation for [export-file](doc/api.md#export-file).
+- Use the correct letter case for variables.
+
+### Removed
+- Deleted files for running tests in multiple shell environments.
+
 ## [1.0.0](https://github.com/abbotto/shell-api/releases/tag/v1.0.0) - 2018-09-17
 ### Added
 - `changelog` file.
