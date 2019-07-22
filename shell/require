@@ -3,28 +3,28 @@
 # Usage: doc/api.md#require
 
 require(){
-	IS_SCRIPT=""
-	IS_CMD=""
-	MESSAGE="${2:-}"
+	is_script=""
+	is_cmd=""
+	message="${2:-}"
 
     if [ -z "${1}" ]; then
         echo "require: arguments are missing"
         return 127
     fi
 
-	if [ -n "$(command -v "${1}")" ]; then IS_CMD=true;
+	if [ -n "$(command -v "${1}")" ]; then is_cmd=true;
 	elif [ -f "${1}" ]; then
 		head -n1 "${1}" | grep -q '^#!'
-		if [ $? = 0 ]; then IS_SCRIPT=true; fi
+		if [ $? = 0 ]; then is_script=true; fi
 	fi
 
-	if [ -z "${IS_CMD}" ] && [ -z "${IS_SCRIPT}" ]; then
+	if [ -z "${is_cmd}" ] && [ -z "${is_script}" ]; then
 		echo "Required resource not found: '${1}'"
-		if [ -n "${MESSAGE}" ]; then echo "${MESSAGE}"; fi
+		if [ -n "${message}" ]; then echo "${message}"; fi
 		return 127
 	fi
 
-	if [ -z "${IS_CMD}" ]; then
+	if [ -z "${is_cmd}" ]; then
 		. "${1}"
 
 		if [ "${?}" != 0 ]; then exit "${?}"; fi

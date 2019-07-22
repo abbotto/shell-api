@@ -13,12 +13,12 @@ start_daemon(){
         echo "start-daemon: arguments are missing"
         return 127
     else
-        LOG_ID="${1}"
+        log_id="${1}"
         shift $(( $# > 0 ? 1 : 0 ))
 
         # Start as a background process
         # Write a log file and a process id file
-        nohup "${*}" > "/tmp/shell-api/${LOG_ID}.log" >/dev/null 2>&1 & \
-        echo "${!}" > "/tmp/shell-api/${LOG_ID}.pid"
+        nohup "${*}" > "/tmp/shell-api/${log_id}.log" >/dev/null 2>&1 & \
+        echo "${!}" > "/tmp/shell-api/${log_id}.pid"
     fi
 }

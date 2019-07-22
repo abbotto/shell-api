@@ -8,14 +8,14 @@ POSIXLY_CORRECT=1;
 # --------------------------
 # START Bash-specific rules
 # --------------------------
-CURRENT_SHELL=$(ps -p $$ -oargs=)
+current_shell=$(ps -p $$ -oargs=)
 
 if [ -n "$(! set +B >/dev/null 2>&1)" ]; then
     # Disable brace expansion
     set +B
 fi
 
-if test "${CURRENT_SHELL#*bash}" != "$CURRENT_SHELL"; then
+if test "${current_shell#*bash}" != "$current_shell"; then
     # Prevent errors in a pipeline from being masked
     set -o pipefail
 

@@ -7,10 +7,10 @@
 alias join-file="join_file"
 
 join_file(){
-    A=""
-    B=""
-    SUDO=""
-    TARGET="${1}"
+    part_a=""
+    part_b=""
+    sudo_cmd=""
+    target="${1}"
 
     if [ -z "${1}" ]; then
         echo "join-file: arguments are missing"
@@ -18,27 +18,27 @@ join_file(){
     fi
 
     if [ "${1}" = "-a" ] || [ "${1}" = "--auth" ]; then
-        SUDO="sudo "
+        sudo_cmd="sudo "
         shift $(( $# > 0 ? 1 : 0 ))
     fi
 
     # 2 files
     if [ -f "${1}" ] && [ -f "${2}" ]; then
-        A=$(awk '1' "${1}")
-        B=$(awk '1' "${2}")
+        part_a=$(awk '1' "${1}")
+        part_b=$(awk '1' "${2}")
     # File and string
     elif [ -f "${1}" ] && [ -n "${2}" ]; then
-        A=$(awk '1' "${1}")
-        B="${2}"
+        part_a=$(awk '1' "${1}")
+        part_b="${2}"
     # String and file
     elif [ -f "${2}" ] && [ -n "${1}" ]; then
-        A="${1}"
-        B=$(awk '1' "${2}")
-        TARGET="${2}"
+        part_a="${1}"
+        part_b=$(awk '1' "${2}")
+        target="${2}"
     else
         echo "Cannot find target - no such file"
         return 127
     fi
 
-	echo "${A}${B}" | "${SUDO}"tee "${TARGET}" >/dev/null 2>&1
+	echo "${part_a}${part_b}" | "${sudo_cmd}"tee "${target}" >/dev/null 2>&1
 }

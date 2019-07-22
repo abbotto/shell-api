@@ -1,20 +1,20 @@
 #!/usr/bin/env sh
 
-SHELL_API_PATH="${SHELL_API_PATH:-'./shell'}"
+shell_api_path="${shell_api_path:-'./shell'}"
 
 # Enable strict mode
-. "${SHELL_API_PATH}"/strict-mode
+. "${shell_api_path}"/strict-mode
 
 # Load dependencies
-. "${SHELL_API_PATH}"/confirm
-. "${SHELL_API_PATH}"/export-file
-. "${SHELL_API_PATH}"/join-file
-. "${SHELL_API_PATH}"/pipe-file
-. "${SHELL_API_PATH}"/print-text
-. "${SHELL_API_PATH}"/read-file
-. "${SHELL_API_PATH}"/require
-. "${SHELL_API_PATH}"/start-daemon
-. "${SHELL_API_PATH}"/stop-daemon
-. "${SHELL_API_PATH}"/terminate
-. "${SHELL_API_PATH}"/watch-daemon
-. "${SHELL_API_PATH}"/write-file
+. "${shell_api_path}"/confirm
+. "${shell_api_path}"/export-file
+. "${shell_api_path}"/join-file
+. "${shell_api_path}"/pipe-file
+. "${shell_api_path}"/print-text
+. "${shell_api_path}"/read-file
+. "${shell_api_path}"/require
+. "${shell_api_path}"/start-daemon
+. "${shell_api_path}"/stop-daemon
+. "${shell_api_path}"/terminate
+. "${shell_api_path}"/watch-daemon
+. "${shell_api_path}"/write-file

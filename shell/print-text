@@ -12,8 +12,8 @@ print_text(){
         return 127
     fi
 
-	START=$(tput setaf "${1}")
-	STOP=$(tput sgr0)
+	start=$(tput setaf "${1}")
+	stop=$(tput sgr0)
 
-	printf '%s\n' "${START}${2}${STOP}"
+	printf '%s\n' "${start}${2}${stop}"
 }

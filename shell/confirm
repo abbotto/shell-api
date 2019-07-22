@@ -7,12 +7,12 @@ confirm(){
         echo "confirm: arguments are missing"
         return 127
     else
-        QUESTION="${1}"
-        YES_CALLBACK="${2}"
-        NO_CALLBACK="${3}"
+        question="${1}"
+        yes_callback="${2}"
+        no_callback="${3}"
 
         # Ask a 'yes/no' type question
-        echo "${QUESTION} [y/n]? "
+        echo "${question} [y/n]? "
 
         # Listen for input
         old_stty_cfg=$(stty -g)
@@ -22,10 +22,9 @@ confirm(){
 
         # Respond to input
         if echo "$response" | grep -iq "^y"; then
-            "${YES_CALLBACK}"
+            "${yes_callback}"
         elif [ -n "${2}" ]; then
-            "${NO_CALLBACK}"
+            "${no_callback}"
         fi
-    
     fi
 }
