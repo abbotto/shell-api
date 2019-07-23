@@ -39,17 +39,13 @@ All functions have been tested in `bash`, `dash`, `fish`, `ksh`, and `zsh`.
 
       npm i shell-api --save
 
-- Symlink the `shell` directory within a project.
-
-      ln -s ./node_modules/shell-api/shell ./.shell
-
 ### Usage
 
 **Method A**
 
     #!/usr/bin/env sh
 
-    SHELL_API_PATH="/path/to/.shell-api"
+    SHELL_API_PATH="/path/to/shell-api/shell"
 
     export SHELL_API_PATH
 
@@ -65,7 +61,7 @@ All functions have been tested in `bash`, `dash`, `fish`, `ksh`, and `zsh`.
 
     #!/usr/bin/env sh
 
-    SHELL_API_PATH="/path/to/.shell-api"
+    SHELL_API_PATH="/path/to/shell-api/shell"
 
     export SHELL_API_PATH
 
