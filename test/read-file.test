@@ -7,8 +7,6 @@
 echo ""
 print-text 12 "Checking if the 'read-file' function works..."
 
-echo ""
-
 cmd="$(read-file ./tmp/.env.test)"
 exit_code=1
 

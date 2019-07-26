@@ -7,7 +7,6 @@
 echo ""
 print-text 12 "Checking if the 'watch-daemon' function works..."
 
-echo ""
 watch-daemon -n daemon_test
 
 terminate "${?}" "PASS" "FAIL"

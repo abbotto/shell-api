@@ -7,8 +7,6 @@
 echo ""
 print-text 12 "Checking if the 'pipe-file' function works..."
 
-echo ""
-
 cmd="$(pipe-file ./tmp/.env.* cat {})"
 exit_code=1
 

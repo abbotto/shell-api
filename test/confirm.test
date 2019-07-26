@@ -6,7 +6,6 @@
 
 echo ""
 print-text 12 "Checking if the 'confirm' function fails properly..."
-echo ""
 
 confirm >/dev/null 2>&1
 

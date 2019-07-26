@@ -7,7 +7,6 @@
 echo ""
 print-text 12 "Checking if the 'stop-daemon' function works..."
 
-echo ""
 stop-daemon daemon_test
 
 exit_code="${?}"

@@ -6,7 +6,6 @@
 
 echo ""
 print-text 12 "Checking if the 'export-file' function works..."
-echo ""
 
 exit_code=0
 script_path=$(cd "$(dirname "${0}")" || .; pwd)
