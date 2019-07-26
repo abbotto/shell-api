@@ -57,6 +57,9 @@ capture_exit_code
 ./test/stop-daemon.test
 capture_exit_code
 
+./test/substring.test
+capture_exit_code
+
 ./test/write-file.test
 capture_exit_code
 

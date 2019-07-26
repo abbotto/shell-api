@@ -1,0 +1,22 @@
+#!/usr/bin/env sh
+
+. shell/print-text
+. shell/terminate
+. shell/substring
+
+echo ""
+print-text 12 "Checking if the 'substring' function works..."
+
+exit_code=1
+
+substring "hello world" "hello"
+IS_TRUE="${?}"
+
+substring "hello world" "zello"
+IS_FALSE="${?}"
+
+if [ "${IS_TRUE}" = 0 ] && [ "${IS_FALSE}" = 1 ]; then
+    exit_code=0
+fi
+
+terminate "${exit_code}" "PASS" "FAIL"
