@@ -1,0 +1,24 @@
+#!/usr/bin/env sh
+
+# Usage: doc/api.md#substring
+
+substring(){
+    if [ -z "${1}" ] || [ -z "${2}" ]; then
+        printf '%s' "substring: arguments are missing"
+        return 127
+    fi
+
+    # Properly handle special characters
+    char_handler(){
+        # Remove ANSI characters
+        # Remove non-printable characters
+        # Replace problematic characters
+        printf '%s' "${1}" | sed "s|\x1b\[[0-9A-Za-z;]*m||g;s|(B||g;s/[^[:print:]]//g;s|\\[|__LSB__|g"
+    }
+
+    str=$(char_handler "${1:-}")
+    sub_str=$(char_handler "${2:-}")
+
+    test_str=$(echo "${str}" | sed "s/.*\(${sub_str}\).*/\1/")
+    test "${test_str}" = "${sub_str}"
+}
