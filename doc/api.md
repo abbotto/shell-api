@@ -168,6 +168,16 @@ Reference: [Wikipedia](https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit)
 
 ---
 
+## [substring](#substring)
+
+- Test if a string contains a substring.
+
+      Usage: substring <STRING> <SUBSTRING>
+
+[source code](../shell/substring)
+
+---
+
 ## [terminate](#terminate)
 
 - Print a pass or fail message and exit a script.

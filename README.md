@@ -22,6 +22,7 @@ All functions have been tested in `bash`, `dash`, `fish`, `ksh`, and `zsh`.
 - [print-text](doc/api.md#print-text)
 - [read-file](doc/api.md#read-file)
 - [require](doc/api.md#require)
+- [substring](doc/api.md#substring)
 - [start-daemon](doc/api.md#start-daemon)
 - [stop-daemon](doc/api.md#stop-daemon)
 - [strict-mode](doc/api.md#strict-mode)
