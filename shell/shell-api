@@ -15,6 +15,9 @@ shell_api_path="${SHELL_API_PATH:-'./shell'}"
 . "${shell_api_path}"/require
 . "${shell_api_path}"/start-daemon
 . "${shell_api_path}"/stop-daemon
+. "${shell_api_path}"/substring
 . "${shell_api_path}"/terminate
 . "${shell_api_path}"/watch-daemon
 . "${shell_api_path}"/write-file
+
+# SHELL_API_PATH="$(pwd)/shell"; export SHELL_API_PATH; . shell/shell-api

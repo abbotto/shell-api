@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
-. shell/print-text
-. shell/terminate
+. "${SHELL_API_PATH}"/print-text
+. "${SHELL_API_PATH}"/terminate
 
 echo ""
 print-text 12 "Checking if the 'print-text' function works..."

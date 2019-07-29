@@ -4,6 +4,7 @@
 
 # Force POSIX-compliant behaviour
 POSIXLY_CORRECT=1;
+export POSIXLY_CORRECT
 
 # --------------------------
 # START Bash-specific rules

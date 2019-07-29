@@ -3,7 +3,7 @@
 # Usage: doc/api.md#watch-daemon
 
 # Create an alias
-. ./shell/common/expand-aliases
+. "${SHELL_API_PATH}"/common/expand-aliases
 alias watch-daemon="watch_daemon"
 
 watch_daemon(){

@@ -1,6 +1,9 @@
 #!/usr/bin/env sh
 
-. ./shell/strict-mode
+SHELL_API_PATH='./shell'
+export SHELL_API_PATH
+
+. "${SHELL_API_PATH}"/strict-mode
 
 exit_code=0
 pass_count=0

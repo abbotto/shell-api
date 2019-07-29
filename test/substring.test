@@ -1,8 +1,8 @@
 #!/usr/bin/env sh
 
-. shell/print-text
-. shell/terminate
-. shell/substring
+. "${SHELL_API_PATH}"/print-text
+. "${SHELL_API_PATH}"/terminate
+. "${SHELL_API_PATH}"/substring
 
 echo ""
 print-text 12 "Checking if the 'substring' function works..."
