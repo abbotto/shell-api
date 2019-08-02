@@ -1,0 +1,99 @@
+#!/usr/bin/env sh
+
+# Usage: doc/api.md#log-level
+
+# Create an alias
+# shellcheck disable=SC1090
+. "${SHELL_API_PATH}"/common/expand-aliases
+alias log-level="log_level"
+
+log_level() {
+    #--------------------------------------------------------------------------------------------
+    # Date and time
+    #--------------------------------------------------------------------------------------------
+    date_time_rfc_3339=$(date --rfc-3339=seconds)
+    date_time="$(date +%Y-%m-%d) $(date +%T%z)"
+
+    #--------------------------------------------------------------------------------------------
+    # Arguments
+    #--------------------------------------------------------------------------------------------
+    if [ -z "${1}" ] || [ -z "${2}" ]; then
+        printf '%s' "log-level: arguments are missing"
+        return 127
+    fi
+
+    log_file_input="${3:-}"
+    log_level_input="${1:-}"
+    log_msg_input="${2:-}"
+
+    #--------------------------------------------------------------------------------------------
+    # Log path
+    #--------------------------------------------------------------------------------------------
+    # > If the log path is set via 'SHELL_API_LOG_PATH', that path will be used
+    # > If the log path is set via an argument, that path will take precedent
+    # > If a log path is not found, one will be generated and set to 'SHELL_API_LOG_PATH'
+    #--------------------------------------------------------------------------------------------
+    SHELL_API_LOG_PATH="${SHELL_API_LOG_PATH:-$(mktemp -d)}"
+    shell_api_log_filename="$(date +%Y%m%d).log"
+
+    if [ -n "${log_file_input}" ]; then
+        SHELL_API_LOG_PATH="${log_file_input}"
+    fi
+
+    export SHELL_API_LOG_PATH
+    shell_api_log_file="${SHELL_API_LOG_PATH}/${shell_api_log_filename}"
+
+    #--------------------------------------------------------------------------------------------
+    # Log levels
+    #--------------------------------------------------------------------------------------------
+    # > [5] TRACE - Verbose diagnostic information generally used by developers
+    # > [4] DEBUG - Diagnostic information generally used by developers and administators
+    # > [3] INFO  - General information about the state of the process and it's operations
+    # > [2] WARN  - When something abnormal has occurred but the system can recover safely
+    # > [1] ERROR - When a problem is fatal to an operation, but not for the parent process
+    # > [0] FATAL - When a process stops because it cannot recover safely Sfrom an abnormal state
+    # > [X] OFF   - Disable all logging
+    #--------------------------------------------------------------------------------------------
+    log_level_priority=5
+    log_level_threshold=5
+    shell_api_log_level="${SHELL_API_LOG_LEVEL:-'TRACE'}"
+
+    log_level_start_color=$(tput setaf 4)
+    log_level_stop_color=$(tput sgr0)
+
+    if [ "${log_level_input}" = 'DEBUG' ]; then
+        log_level_priority=4
+        log_level_start_color=$(tput setaf 6)
+    elif [ "${log_level_input}" = 'INFO' ]; then
+        log_level_priority=3
+        log_level_start_color=$(tput setaf 2)
+    elif [ "${log_level_input}" = 'WARN' ]; then
+        log_level_priority=2
+        log_level_start_color=$(tput setaf 3)
+    elif [ "${log_level_input}" = 'ERROR' ]; then
+        log_level_priority=1
+        log_level_start_color=$(tput setaf 1)
+    elif [ "${log_level_input}" = 'FATAL' ]; then
+        log_level_priority=0
+        log_level_start_color=$(tput setaf 5)
+    fi
+
+    [ "${shell_api_log_level}" = 'DEBUG' ] && log_level_threshold=4
+    [ "${shell_api_log_level}" = 'INFO' ] && log_level_threshold=3
+    [ "${shell_api_log_level}" = 'WARN' ] && log_level_threshold=2
+    [ "${shell_api_log_level}" = 'ERROR' ] && log_level_threshold=1
+    [ "${shell_api_log_level}" = 'FATAL' ] && log_level_threshold=0
+    [ "${shell_api_log_level}" = 'OFF' ] && log_level_threshold=-1
+
+    #--------------------------------------------------------------------------------------------
+    # Log output
+    #--------------------------------------------------------------------------------------------
+    # > <TIMESTAMP [RFC 3339]> (<PID>)[<PRIORITY>]: <MESSAGE>
+    #--------------------------------------------------------------------------------------------
+    # > Write the log to a file if the current message is within the threshold
+    #--------------------------------------------------------------------------------------------
+    if [ "${log_level_priority}" -le "${log_level_threshold}" ]; then
+        printf '%s\n' "${log_level_start_color}${date_time} ($$)[${log_level_input}]${log_level_stop_color}: ${log_msg_input}"
+        printf '%s\n' "${date_time} ($$)[${log_level_input}]: ${log_msg_input}" | tee -a "${shell_api_log_file}" >/dev/null 2>&1
+    fi
+}
