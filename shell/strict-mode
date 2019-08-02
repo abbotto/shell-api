@@ -9,14 +9,14 @@ export POSIXLY_CORRECT
 # --------------------------
 # START Bash-specific rules
 # --------------------------
-shell_api_env=$(ps -p $$ -oargs=)
+shell_api_env=$(ps $$)
 
 if [ -n "$(! set +B >/dev/null 2>&1)" ]; then
     # Disable brace expansion
     set +B
 fi
 
-if test "${shell_api_env#*bash}" != "$shell_api_env"; then
+if [ -z "${shell_api_env##*'/bin/bash'*}" ]; then
     # Prevent errors in a pipeline from being masked
     set -o pipefail
 
