@@ -18,6 +18,7 @@ All functions have been tested in `bash`, `dash`, `fish`, `ksh`, and `zsh`.
 - [confirm](doc/api.md#confirm)
 - [export-file](doc/api.md#export-file)
 - [join-file](doc/api.md#join-file)
+- [log-level](doc/api.md#log-level)
 - [pipe-file](doc/api.md#pipe-file)
 - [print-text](doc/api.md#print-text)
 - [read-file](doc/api.md#read-file)
