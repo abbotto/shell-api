@@ -39,6 +39,9 @@ capture_exit_code
 ./test/join-file.test
 capture_exit_code
 
+./test/log-level.test
+capture_exit_code
+
 ./test/pipe-file.test
 capture_exit_code
 
