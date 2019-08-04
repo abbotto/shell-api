@@ -12,7 +12,6 @@ watch_daemon(){
     if [ -z "${1}" ]; then
         echo "watch-daemon: arguments are missing"
         return 127
-
     elif [ "${1}" = "-n" ] || [ "${1}" = "--no-follow" ]; then
         options=""
         shift $(( $# > 0 ? 1 : 0 ))

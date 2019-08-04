@@ -12,21 +12,22 @@ require(){
         return 127
     fi
 
-	if [ -n "$(command -v "${1}")" ]; then is_cmd=true;
+	if [ -n "$(command -v "${1}")" ]; then
+		is_cmd=true
 	elif [ -f "${1}" ]; then
 		head -n1 "${1}" | grep -q '^#!'
-		if [ $? = 0 ]; then is_script=true; fi
+		[ $? = 0 ] && is_script=true
 	fi
 
 	if [ -z "${is_cmd}" ] && [ -z "${is_script}" ]; then
 		echo "Required resource not found: '${1}'"
-		if [ -n "${message}" ]; then echo "${message}"; fi
+		[ -n "${message}" ] && echo "${message}"
+		
 		return 127
 	fi
 
 	if [ -z "${is_cmd}" ]; then
 		. "${1}"
-
-		if [ "${?}" != 0 ]; then exit "${?}"; fi
+		[ "${?}" != 0 ] exit "${?}"
 	fi
 }
