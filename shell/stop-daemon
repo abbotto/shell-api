@@ -7,12 +7,11 @@
 alias stop-daemon="stop_daemon"
 
 stop_daemon(){
-    pid_path="/tmp/shell-api/${1}.pid"
+    pid_path="/tmp/shell-api/${1:-}.pid"
 
     if [ -z "${1}" ]; then
         echo "stop-daemon: arguments are missing"
         return 127
-
     elif [ ! -f "${pid_path}" ]; then
         echo "Cannot stop '${1}' - no such process"
         return 127
