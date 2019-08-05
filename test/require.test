@@ -8,7 +8,7 @@ echo ""
 print-text 12 "Checking if the 'require' function works..."
 
 mkdir -p ./tmp
-printf '#!/usr/bin/env sh\n\necho "HELLO WORLD"' | tee ./tmp/require >/dev/null 2>&1
+printf '%s' '#!/usr/bin/env sh\n\necho "HELLO WORLD"' | tee ./tmp/require >/dev/null 2>&1
 chmod +x ./tmp/require
 
 require ./tmp/require
