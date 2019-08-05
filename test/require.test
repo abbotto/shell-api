@@ -7,10 +7,20 @@
 echo ""
 print-text 12 "Checking if the 'require' function works..."
 
+exit_code=1
+
 mkdir -p ./tmp
 printf '%s' '#!/usr/bin/env sh\n\necho "HELLO WORLD"' | tee ./tmp/require >/dev/null 2>&1
 chmod +x ./tmp/require
 
 require ./tmp/require
+IS_TRUE="${?}"
 
-terminate "${?}" "PASS" "FAIL"
+require 'foo_bar'
+IS_FALSE="${?}"
+
+if [ "${IS_TRUE}" = 0 ] && [ "${IS_FALSE}" = 1 ]; then
+    exit_code=0
+fi
+
+terminate "${exit_code}" "PASS" "FAIL"
