@@ -4,9 +4,9 @@ shells=bash,dash,fish,ksh,zsh
 
 for SHELL_API_ENV in $(echo "${shells}" | sed "s/,/ /g"); do
     echo ""
-    echo "--------------------------"
+    echo "----------------------------------------------------"
     echo "Testing in '${SHELL_API_ENV}' shell..."
-    echo "--------------------------"
+    echo "----------------------------------------------------"
 
     export SHELL_API_ENV
 
