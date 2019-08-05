@@ -3,31 +3,26 @@
 # Usage: doc/api.md#require
 
 require(){
-	is_script=""
-	is_cmd=""
+	requirement="${1:-}"
 	message="${2:-}"
 
-    if [ -z "${1}" ]; then
-        echo "require: arguments are missing"
-        return 127
-    fi
+	if [ -n "${requirement}" ] || [ -n "$(command -v "${requirement}")" ]; then
+		if [ -f "${requirement}" ]; then
+			head -n1 "${requirement}" | grep -q '^#!'
 
-	if [ -n "$(command -v "${1}")" ]; then
-		is_cmd=true
-	elif [ -f "${1}" ]; then
-		head -n1 "${1}" | grep -q '^#!'
-		[ $? = 0 ] && is_script=true
-	fi
+			if [ "${?}" = 0 ]; then
+				. "${requirement}"
+				[ "${?}" = 0 ] && exit 0 || exit "${?}"
+			fi
+		fi
+	else
+	    if [ -z "${requirement}" ]; then
+        	echo "require: arguments are missing"
+    	else
+			echo "Requirement is missing: '${requirement}'"
+			[ -n "${message}" ] && echo "${message}"
+		fi
 
-	if [ -z "${is_cmd}" ] && [ -z "${is_script}" ]; then
-		echo "Required resource not found: '${1}'"
-		[ -n "${message}" ] && echo "${message}"
-		
-		return 127
-	fi
-
-	if [ -z "${is_cmd}" ]; then
-		. "${1}"
-		[ "${?}" != 0 ] exit "${?}"
+		exit 127
 	fi
 }
