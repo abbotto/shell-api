@@ -8,6 +8,7 @@
 !.editorconfig
 !.gitattributes
 !.gitignore
+!.npmignore
 !.nvmrc
 !.travis.yml
 !CHANGELOG.md
