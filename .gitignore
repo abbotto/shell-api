@@ -1,7 +1,10 @@
-# Blacklist everything by default
+# Ignore everything
 *
 
-# Whitelist files and directories
+# Descend into directories
+!**/
+
+# Permitted
 !.editorconfig
 !.gitattributes
 !.gitignore
@@ -9,20 +12,14 @@
 !.travis.yml
 !CHANGELOG.md
 !CONTRIBUTING.md
-!README.md
+!LICENSE
 !package.json
+!README.md
 
-!/doc
 !/doc/**/*
-
-!/shell
 !/shell/**/*
-
-!/test
 !/test/**/*
-
-!/tool
 !/tool/**/*
 
-# Blacklist files and directories
+# Unpermitted
 .DS_Store
