@@ -4,6 +4,7 @@
   "description": "A robust set of POSIX-compliant scripts for shell environments",
   "main": "shell/shell-api",
   "scripts": {
+    "deploy:npm": "./tool/deploy --npm",
     "lint": "./tool/lint --sh && ./tool/lint --yml",
     "lint:sh": "./tool/lint --sh",
     "lint:yml": "./tool/lint --yml",
