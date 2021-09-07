@@ -1,0 +1,23 @@
+#!/usr/bin/env sh
+
+set -u
+
+SPEC_NAME='watch_daemon'
+export SPEC_NAME
+
+. ./test/tmp/shell-api
+./test/util/test-intro.sh
+
+spec --describe "∙ should pass when the output is correct..."
+spec --evaluate "watch_daemon -n daemon_test >/dev/null 2>&1"
+spec --assert "${?}" 0
+
+spec --describe "∙ should fail when there are not enough arguments..."
+spec --evaluate "watch_daemon >/dev/null 2>&1"
+spec --assert "${?}" 127
+
+spec --describe "∙ should fail when there are too many arguments..."
+spec --evaluate "watch_daemon 1 2 3 4 >/dev/null 2>&1"
+spec --assert "${?}" 1
+
+. ./test/util/test-outro.sh

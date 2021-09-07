@@ -1,0 +1,35 @@
+#!/usr/bin/env sh
+
+set -u
+
+SPEC_NAME='print_text'
+export SPEC_NAME
+
+. ./test/tmp/shell-api
+./test/util/test-intro.sh
+
+cmd=$(print_text 15 '\n%s\n' "hello world")
+exit_code="${?}"
+
+spec --describe "∙ should pass if the correct text is printed..."
+exit_code="${?}"
+spec --evaluate "echo ${exit_code} >/dev/null 2>&1"
+if [ "${cmd}" = "hello world" ] &&
+	[ "${SPEC_EXIT_STATUS}" = 0 ]; then
+	exit_code=0
+fi
+spec --assert "${SPEC_EXIT_STATUS}" "${exit_code}"
+
+spec --describe "∙ should fail when the color index is a non-integer value..."
+spec --evaluate "print_text abc123 'hello world' >/dev/null 2>&1"
+spec --assert "${?}" 1
+
+spec --describe "∙ should fail when there are too many arguments..."
+spec --evaluate "print_text 1 2 3 4 >/dev/null 2>&1"
+spec --assert "${?}" 1
+
+spec --describe "∙ should fail when arguments are missing..."
+spec --evaluate "print_text >/dev/null 2>&1"
+spec --assert "${?}" 127
+
+. ./test/util/test-outro.sh

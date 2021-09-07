@@ -1,0 +1,68 @@
+#!/usr/bin/env sh
+
+set -u
+
+SPEC_NAME='make_text'
+export SPEC_NAME
+
+. ./test/tmp/shell-api
+./test/util/test-intro.sh
+
+check_output() {
+	limit="${2:-20}"
+	text=$(make_text "${limit}" "${1}")
+
+	if echo "${text}" | grep -q "^[[:${1}:]]*$"; then
+		if [ "${#text}" = "${limit}" ]; then
+			return 0
+		fi
+	fi
+
+	return 1
+}
+
+spec --describe "∙ should pass when length of characters is correct..."
+spec --evaluate "check_output 'digit' 99"
+spec --assert "${?}" 0
+
+spec --describe "∙ should pass when numerical characters are returned..."
+spec --evaluate "check_output 'digit'"
+spec --assert "${?}" 0
+
+spec --describe "∙ should pass when alphanumeric characters are returned..."
+spec --evaluate "check_output 'alnum'"
+spec --assert "${?}" 0
+
+spec --describe "∙ should pass when alphabetic characters are returned..."
+spec --evaluate "check_output 'alpha'"
+spec --assert "${?}" 0
+
+spec --describe "∙ should pass when lowercase characters are returned..."
+spec --evaluate "check_output 'lower'"
+spec --assert "${?}" 0
+
+spec --describe "∙ should pass when uppercase characters are returned..."
+spec --evaluate "check_output 'upper'"
+spec --assert "${?}" 0
+
+spec --describe "∙ should pass when punctuation characters are returned..."
+spec --evaluate "check_output 'punct'"
+spec --assert "${?}" 0
+
+spec --describe "∙ should pass when hexidecimal characters are returned..."
+spec --evaluate "check_output 'xdigit'"
+spec --assert "${?}" 0
+
+spec --describe "∙ should fail when the 'limit' argument is a non-integer value..."
+spec --evaluate "make_text xdigit foobar >/dev/null 2>&1"
+spec --assert "${?}" 1
+
+spec --describe "∙ should fail when there are too many arguments..."
+spec --evaluate "make_text 20 xdigit 20 >/dev/null 2>&1"
+spec --assert "${?}" 1
+
+spec --describe "∙ should fail when arguments are missing..."
+spec --evaluate "make_text >/dev/null 2>&1"
+spec --assert "${?}" 127
+
+. ./test/util/test-outro.sh

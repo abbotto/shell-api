@@ -1,0 +1,37 @@
+#!/usr/bin/env sh
+
+set -eu
+
+arg="${1:-}"
+
+SHELL_API_PATH="${SHELL_API_PATH:-shell}"
+export SHELL_API_PATH
+
+. "${SHELL_API_PATH}"/log_text
+
+if [ "${arg}" = '--npm' ]; then
+	cd "$(npm prefix)"
+
+	pkg=$(npm version | head -n 1)
+	pkg_name=$(echo "${pkg}" | sed "s/{ '\(.*\)':.*/\1/")
+	local_pkg_version=$(echo "${pkg}" | grep -o -e '[0-9]*\.[0-9]*\.[0-9]*')
+	remote_pkg_version=$(npm dist-tag | awk '{print $2}')
+
+	log_text "INFO" "Attempting to publish '${pkg_name}' to the NPM registry..."
+
+	check_version=$(
+		awk "BEGIN{if(${local_pkg_version} > ${remote_pkg_version}){ print 0 }}"
+	)
+
+	if [ "${check_version}" = 0 ]; then
+		log_text "INFO" "The local package version (${local_pkg_version}) is different from the remote package version (${remote_pkg_version})"
+		log_text "INFO" "Package version has been bumped - deploying..."
+
+		if npm publish; then
+			log_text "INFO" "The package has been published"
+		fi
+	else
+		log_text "WARN" "The local package version (${local_pkg_version}) does not exceed the remote package version (${remote_pkg_version})"
+		log_text "WARN" "Package version is too low - skipping deployment"
+	fi
+fi

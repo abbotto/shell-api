@@ -1,0 +1,35 @@
+#!/usr/bin/env sh
+
+set -u
+
+SPEC_NAME='join_file'
+export SPEC_NAME
+
+tmp=$(mktemp -d)
+
+# Remove the temporary directory when the script quits
+# shellcheck disable=SC2064
+trap "rm -rf '${tmp}'" EXIT INT HUP TERM
+
+. ./test/tmp/shell-api
+./test/util/test-intro.sh
+
+touch "${tmp}"/join-file
+
+spec --describe "∙ should put the input together correctly..."
+spec --evaluate "join_file '${tmp}/join-file' 'hello world' >/dev/null 2>&1"
+spec --assert "${?}" 0
+
+spec --describe "∙ should pass if 'stdin' is used for the first argument..."
+spec --evaluate "echo 'hello world' | join_file '${tmp}/join-file'"
+spec --assert "${?}" 0
+
+spec --describe "∙ should fail when there are too many arguments (A)..."
+spec --evaluate "join_file '${tmp}/join-file' 'hello world' 'hello moon' 'hello sun' >/dev/null 2>&1"
+spec --assert "${?}" 1
+
+spec --describe "∙ should fail when there are too many arguments (B)..."
+spec --evaluate "join_file '${tmp}/join-file' 'hello world' 'hello moon' >/dev/null 2>&1"
+spec --assert "${?}" 1
+
+. ./test/util/test-outro.sh

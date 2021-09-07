@@ -1,0 +1,59 @@
+#!/usr/bin/env sh
+
+# Usage: doc/read/api.md#read_file
+if [ "${1:-}" = 'read_file' ] || [ "${1:-}" = '--' ] || [ "${#}" -lt 1 ]; then
+	read_file() {
+		if [ -z "${1:-}" ]; then
+			printf '%s\n' "Invalid input: Missing arguments"
+			return 127
+		fi
+
+		if [ "${#}" -gt 2 ]; then
+			printf '%s\n' "Invalid input: Too many arguments"
+			return 1
+		fi
+
+		is_integer() {
+			case "${1#[+-]}" in
+			*[!0-9]* | '') return 1 ;;
+			esac || return 0
+		}
+
+		if is_integer "${1:-}"; then
+			line_number="${1:-}"
+			file="${2:-}"
+		elif is_integer "${2:-}"; then
+			line_number="${2:-}"
+			file="${1:-}"
+		elif [ -z "${2:-}" ] && [ -n "${1:-}" ]; then
+			file="${1}"
+		elif [ -n "${2:-}" ]; then
+			printf '%s\n' "Invalid input: Not an integer"
+			return 1
+		fi
+
+		if [ ! -f "${file}" ]; then
+			printf '%s\n' "File not found: '${file}'"
+			return 127
+		fi
+
+		if [ -n "${line_number:-}" ]; then
+			line="$(awk NR=="${line_number}" "${file}")"
+
+			if [ -z "${line}" ]; then
+				printf '%s\n' "Line '${line_number}' is empty or does not exist"
+				return 127
+			fi
+
+			printf '%s' "${line}" || return 1
+		else
+			awk '1' "${file}" || return 1
+		fi
+	}
+fi
+
+if [ "${1:-}" = 'read_file' ] || [ "${1:-}" = '--' ] && [ "${#}" -gt 1 ]; then
+	shift $(($# > 0 ? 1 : 0))
+	eval "read_file ${*}"
+	exit "${?}"
+fi

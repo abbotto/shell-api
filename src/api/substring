@@ -1,0 +1,45 @@
+#!/usr/bin/env sh
+
+# Usage: doc/read/api.md#substring
+if [ "${1:-}" = 'substring' ] || [ "${1:-}" = '--' ] || [ "${#}" -lt 1 ]; then
+	substring() {
+		# Look for piped input
+		if [ -p /dev/stdin ]; then
+			while read -r stdin; do
+				set -- "${@}" "${stdin}" "${1}"
+				shift
+			done
+		fi
+
+		if [ "${#}" -lt 2 ]; then
+			printf '%s\n' "Invalid input: Missing arguments"
+			return 127
+		elif [ "${#}" -gt 2 ]; then
+			printf '%s\n' "Invalid input: Too many arguments"
+			return 1
+		fi
+
+		# Handle special characters
+		char_handler() {
+			# Remove ANSI characters
+			# Remove non-printable characters
+			# Replace problematic characters
+			printf '%s' "${1}" |
+				sed "s|\x1b\[[0-9A-Za-z;]*m||g;s|(B||g;s/[^[:print:]]//g;s|\\[|__LSB__|g"
+		}
+
+		str=$(char_handler "${1:-}")
+		sub_str=$(char_handler "${2:-}")
+
+		# shellcheck disable=SC2001
+		test_str=$(printf '%s\n' "${str}" | sed "s/.*\(${sub_str}\).*/\1/")
+		test "${test_str}" = "${sub_str}"
+		return "${?}"
+	}
+fi
+
+if [ "${1:-}" = 'substring' ] || [ "${1:-}" = '--' ] && [ "${#}" -gt 1 ]; then
+	shift $(($# > 0 ? 1 : 0))
+	eval "substring ${*}"
+	exit "${?}"
+fi

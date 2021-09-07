@@ -1,0 +1,70 @@
+#!/usr/bin/env sh
+
+################################################################
+# Enable POSIX mode in supported shells (bash,mksh,yash,zsh)
+# Some shells are POSIX compatible by default (ash,dash,ksh)
+################################################################
+
+# Usage: doc/read/api.md#strict_mode
+strict_mode() {
+	# This environment variable isn't defined by POSIX but it is a
+	# de facto standard that is used by *nix operating systems to ensure
+	# the system behavior aligns with the behavior defined by POSIX.
+	POSIXLY_CORRECT=1
+	export POSIXLY_CORRECT
+
+	# Ensure POSIX mode is enabled
+	# https://www.gnu.org/software/bash/manual/html_node/Bash-POSIX-Mode.html
+	# https://manpages.ubuntu.com/manpages/bionic/man1/yash.1.html#posixly-correct%20mode
+	# https://zsh.sourceforge.io/Doc/Release/Invocation.html#Compatibility
+	if set -o | grep 'posix ' >/dev/null 2>&1; then
+		# shellcheck disable=SC2039,SC3040
+		set -o posix # bash,mksh
+	elif set -o | grep 'posixlycorrect' >/dev/null 2>&1; then
+		# shellcheck disable=SC2039,SC3040
+		set -o posixlycorrect # yash
+	elif set -o | grep 'posixbuiltins' >/dev/null 2>&1; then
+		# In zsh, emulations use 'NO_FUNCTION_ARGZERO' instead of 'POSIX_ARGZERO'.
+		# Running 'emulate' within a function or script could result in an unexpected scoping of $0.
+		# https://zsh.sourceforge.io/Doc/Release/Options.html#index-POSIXARGZERO
+		emulate -R sh -o POSIX_ARGZERO
+	fi
+
+	# Ensure brace expansion is disabled
+	# Brace expansion is not defined by POSIX
+	# BEFORE: > printf '%s\n' {a,b,c} ->
+	# a
+	# b
+	# c
+	# AFTER: > printf '%s\n' {a,b,c} -> {a,b,c}
+	if set -o | grep 'braceexpand' >/dev/null 2>&1; then
+		# shellcheck disable=SC2039,SC3040
+		set +o braceexpand # ash,bash,ksh,mksh,yash
+	elif set -o | grep 'braceccl' >/dev/null 2>&1; then
+		# shellcheck disable=SC2039,SC3040
+		set -o braceccl # zsh
+	fi
+
+	# Ensure backslash-escape sequences are expanded for the 'echo' builtin
+	# This will cause the shell to conform to the POSIX standard for 'echo'
+	# https://pubs.opengroup.org/onlinepubs/009604599/utilities/echo.html
+	# BEFORE: > echo "Hello\nworld" -> Hello\nworld
+	# AFTER: > echo "Hello\nworld" ->
+	# Hello
+	# world
+	if command -v shopt >/dev/null 2>&1; then
+		# shellcheck disable=SC2039,SC3044
+		shopt -s xpg_echo # bash
+	elif set -o | grep 'bsdecho' >/dev/null 2>&1; then
+		# shellcheck disable=SC2039,SC3040
+		set +o bsdecho # zsh
+	elif [ -n "${YASH_VERSION:-}" ]; then
+		ECHO_STYLE='DASH' # yash
+		export ECHO_STYLE
+	elif [ -n "${KSH_VERSION:-}" ]; then
+		# Place '/xpg' before '/bin | /usr/bin' in ${PATH} to enable
+		# SysV/Unix behavior (expands sequences, doesn’t accept options).
+		PATH=/xpg:"${PATH}" # ksh
+		export PATH
+	fi
+}

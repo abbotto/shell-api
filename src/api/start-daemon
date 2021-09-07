@@ -1,0 +1,38 @@
+#!/usr/bin/env sh
+
+# Usage: doc/read/api.md#start_daemon
+if [ "${1:-}" = 'start_daemon' ] || [ "${1:-}" = '--' ] || [ "${#}" -lt 1 ]; then
+	start_daemon() {
+		if [ -z "${1:-}" ]; then
+			printf '%s\n' "Invalid input: Missing arguments"
+			return 127
+		elif [ "${#}" -gt 2 ]; then
+			printf '%s\n' "Invalid input: Too many arguments"
+			return 1
+		fi
+
+		mkdir -p /tmp/shell-api
+
+		log_id="${1}"
+		shift $(($# > 0 ? 1 : 0))
+
+		if [ ! -f "${1:-}" ]; then
+			printf '%s\n' "Cannot start daemon for '${1:-}' - no such file"
+			return 127
+		fi
+
+		# Start as a background process
+		# Write a log file and a process id file
+		nohup "${*}" >"/tmp/shell-api/${log_id}.log" >/dev/null 2>&1 &
+		exit_code="${?}"
+		printf '%s\n' "${!}" >"/tmp/shell-api/${log_id}.pid"
+
+		return "${exit_code}"
+	}
+fi
+
+if [ "${1:-}" = 'start_daemon' ] || [ "${1:-}" = '--' ] && [ "${#}" -gt 1 ]; then
+	shift $(($# > 0 ? 1 : 0))
+	eval "start_daemon ${*}"
+	exit "${?}"
+fi

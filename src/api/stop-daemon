@@ -1,0 +1,35 @@
+#!/usr/bin/env sh
+
+# Usage: doc/read/api.md#stop_daemon
+if [ "${1:-}" = 'stop_daemon' ] || [ "${1:-}" = '--' ] || [ "${#}" -lt 1 ]; then
+	stop_daemon() {
+		if [ -z "${1:-}" ]; then
+			printf '%s\n' "Invalid input: Missing arguments"
+			return 127
+		elif [ "${#}" -gt 2 ]; then
+			printf '%s\n' "Invalid input: Too many arguments"
+			return 1
+		fi
+
+		# Remove the temporary directory when the script quits
+		# shellcheck disable=SC2064
+		trap "rm -rf /tmp/shell-api/${1}.*" EXIT INT HUP TERM
+
+		pid_path="/tmp/shell-api/${1:-}.pid"
+
+		if [ ! -f "${pid_path}" ]; then
+			printf '%s\n' "Cannot stop '${1}' - no such process"
+			return 127
+		fi
+
+		# Kill the process
+		pid=$(cat "${pid_path}")
+		kill -9 "${pid}" >/dev/null 2>&1
+	}
+fi
+
+if [ "${1:-}" = 'stop_daemon' ] || [ "${1:-}" = '--' ] && [ "${#}" -gt 1 ]; then
+	shift $(($# > 0 ? 1 : 0))
+	eval "stop_daemon ${*}"
+	exit "${?}"
+fi

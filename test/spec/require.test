@@ -1,0 +1,36 @@
+#!/usr/bin/env sh
+
+set -u
+
+SPEC_NAME='require'
+export SPEC_NAME
+
+tmp=$(mktemp -d)
+
+# Remove the temporary directory when the script quits
+# shellcheck disable=SC2064
+trap "rm -rf '${tmp}'" EXIT INT HUP TERM
+
+. ./test/tmp/shell-api
+./test/util/test-intro.sh
+
+printf '%s' '#!/usr/bin/env sh\n\necho "HELLO WORLD"' | tee "${tmp}"/hello_world >/dev/null 2>&1
+chmod +x "${tmp}"/hello_world
+
+spec --describe "∙ should pass when the requirement is met..."
+spec --evaluate "require \"${tmp}\"/hello_world >/dev/null 2>&1"
+spec --assert "${?}" 0
+
+spec --describe "∙ should fail when the requirement can't be met..."
+spec --evaluate "require 'foo_bar' >/dev/null 2>&1"
+spec --assert "${?}" 127
+
+spec --describe "∙ should fail when there are not enough arguments..."
+spec --evaluate "require >/dev/null 2>&1"
+spec --assert "${?}" 127
+
+spec --describe "∙ should fail when there are too many arguments..."
+spec --evaluate "require 1 2 3 4 >/dev/null 2>&1"
+spec --assert "${?}" 1
+
+. ./test/util/test-outro.sh

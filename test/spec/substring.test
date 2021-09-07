@@ -1,0 +1,31 @@
+#!/usr/bin/env sh
+
+set -u
+
+SPEC_NAME='substring'
+export SPEC_NAME
+
+. ./test/tmp/shell-api
+./test/util/test-intro.sh
+
+spec --describe "∙ should pass if a substring is found..."
+spec --evaluate "substring 'hello world' 'hello'"
+spec --assert "${?}" 0
+
+spec --describe "∙ should pass if 'stdin' is used for the first argument..."
+spec --evaluate "echo 'hello world' | substring 'hello'"
+spec --assert "${?}" 0
+
+spec --describe "∙ should fail if a substring isn't found..."
+spec --evaluate "substring 'hello world' 'zello'"
+spec --assert "${?}" 1
+
+spec --describe "∙ should fail if too many args are provided..."
+spec --evaluate "substring 'hello world' 'hello' 'world' >/dev/null 2>&1"
+spec --assert "${?}" 1
+
+spec --describe "∙ should fail if arguments are missing..."
+spec --evaluate "substring >/dev/null 2>&1"
+spec --assert "${?}" 127
+
+. ./test/util/test-outro.sh

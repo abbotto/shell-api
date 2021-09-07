@@ -1,0 +1,46 @@
+#!/usr/bin/env sh
+
+# Usage: doc/read/api.md#print_text
+if [ "${1:-}" = 'print_text' ] || [ "${1:-}" = '--' ] || [ "${#}" -lt 1 ]; then
+	print_text() {
+		if [ -z "${1:-}" ]; then
+			printf '%s\n' "Invalid input: Missing arguments"
+			return 127
+		elif [ "${#}" -gt 3 ]; then
+			printf '%s\n' "Invalid input: Too many arguments"
+			return 1
+		fi
+
+		is_integer() {
+			case "${1#[+-]}" in
+			*[!0-9]* | '') return 1 ;;
+			esac || return 0
+		}
+
+		if ! is_integer "${1:-}"; then
+			printf '%s\n' "Invalid input: Not an integer"
+			return 1
+		fi
+
+		color_index="${1:-}"
+		text_format='%s'
+		text_content="${2:-}"
+
+		if [ -n "${3:-}" ]; then
+			text_format="${2:-}"
+			text_content="${3:-}"
+		fi
+
+		color_start=$(tput setaf "${color_index}")
+		color_stop=$(tput sgr0)
+
+		# shellcheck disable=SC2059
+		printf "${text_format}" "${color_start}${text_content}${color_stop}"
+	}
+fi
+
+if [ "${1:-}" = 'print_text' ] || [ "${1:-}" = '--' ] && [ "${#}" -gt 1 ]; then
+	shift $(($# > 0 ? 1 : 0))
+	eval "print_text ${*}"
+	exit "${?}"
+fi

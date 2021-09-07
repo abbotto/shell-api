@@ -1,0 +1,35 @@
+#!/usr/bin/env sh
+
+set -u
+
+SPEC_NAME='log_text'
+export SPEC_NAME
+
+. ./test/tmp/shell-api
+./test/util/test-intro.sh
+
+spec --describe "∙ should return a 'TRACE' log correctly..."
+spec --evaluate "log_text 'TRACE' 'hello world' >/dev/null 2>&1"
+spec --assert "${?}" 0
+
+spec --describe "∙ should return a 'DEBUG' log correctly..."
+spec --evaluate "log_text 'DEBUG' 'hello world' >/dev/null 2>&1"
+spec --assert "${?}" 0
+
+spec --describe "∙ should return a 'FATAL' log correctly..."
+spec --evaluate "log_text 'FATAL' 'hello world' >/dev/null 2>&1"
+spec --assert "${?}" 0
+
+spec --describe "∙ should return a 'ERROR' log correctly..."
+spec --evaluate "log_text 'ERROR' 'hello world' >/dev/null 2>&1"
+spec --assert "${?}" 0
+
+spec --describe "∙ should return a 'WARN' log correctly..."
+spec --evaluate "log_text 'WARN' 'hello world' >/dev/null 2>&1"
+spec --assert "${?}" 0
+
+spec --describe "∙ should return a 'INFO' log correctly..."
+spec --evaluate "log_text 'INFO' 'hello world' >/dev/null 2>&1"
+spec --assert "${?}" 0
+
+. ./test/util/test-outro.sh

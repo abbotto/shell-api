@@ -1,26 +1,25 @@
-# Ignore everything
+# Ignore everything by default
 *
 
 # Descend into directories
 !**/
 
-# Permitted
+# Allow
 !.editorconfig
 !.gitattributes
 !.gitignore
-!.npmignore
-!.nvmrc
-!.travis.yml
+!.pre-commit-config.yaml
 !CHANGELOG.md
 !CONTRIBUTING.md
 !LICENSE
-!package.json
 !README.md
 
+!/.github/**/*
+!/dev/**/*
 !/doc/**/*
-!/shell/**/*
+!/ops/**/*
+!/src/**/*
 !/test/**/*
-!/tool/**/*
 
-# Unpermitted
+# Deny
 .DS_Store

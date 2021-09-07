@@ -1,0 +1,33 @@
+#!/usr/bin/env sh
+
+set -u
+
+SPEC_NAME='spec'
+export SPEC_NAME
+
+tmp=$(mktemp -d)
+
+# Remove the temporary directory when the script quits
+# shellcheck disable=SC2064
+trap "rm -rf '${tmp}'" EXIT INT HUP TERM
+
+. ./test/tmp/shell-api
+./test/util/test-intro.sh
+
+spec --describe "∙ should pass when the exit code is equal to 0..."
+spec --evaluate "spec --evaluate 'echo 0' >/dev/null 2>&1"
+spec --assert "${?}" 0
+
+spec --describe "∙ should fail when the exit code is greater than 1..."
+spec --evaluate 'spec --evaluate "cat 123" >/dev/null 2>&1'
+spec --assert "${?}" 1
+
+spec --describe "∙ should fail when there are not enough arguments..."
+spec --evaluate "spec >/dev/null 2>&1"
+spec --assert "${?}" 127
+
+spec --describe "∙ should fail when there are too many arguments..."
+spec --evaluate "spec 1 2 3 4 5 >/dev/null 2>&1"
+spec --assert "${?}" 1
+
+. ./test/util/test-outro.sh

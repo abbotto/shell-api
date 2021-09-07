@@ -1,0 +1,72 @@
+#!/usr/bin/env sh
+
+# Usage: doc/read/api.md#join_file
+if [ "${1:-}" = 'join_file' ] || [ "${1:-}" = '--' ] || [ "${#}" -lt 1 ]; then
+	join_file() {
+		# Look for piped input
+		if [ -p /dev/stdin ]; then
+			while read -r stdin; do
+				set -- "${@}" "${stdin}"
+			done
+		fi
+
+		if [ "${#}" -lt 2 ]; then
+			printf '%s\n' "Invalid input: Missing arguments"
+			return 127
+		elif [ "${#}" -gt 3 ]; then
+			printf '%s\n' "Invalid input: Too many arguments"
+			return 1
+		fi
+
+		part_a=""
+		part_b=""
+		target="${1}"
+
+		# Parse arguments
+		for arg in "${@}"; do
+			shift
+			case "${arg}" in
+			-a | --auth) auth_flag="sudo " ;;
+			--* | -*)
+				printf '%s\n' "Error: Unsupported flag: ${1}"
+				exit 1
+				;;
+			*) set -- "${@}" "${arg}" ;;
+			esac
+		done
+
+		sudo_cmd="${auth_flag:-}"
+
+		# Expecting 2 arguments at this point
+		if [ "${#}" -gt 2 ]; then
+			printf '%s\n' "Invalid input: ${*}"
+			return 1
+		fi
+
+		# 2 files
+		if [ -f "${1}" ] && [ -f "${2}" ]; then
+			part_a=$(awk '1' "${1}")
+			part_b=$(awk '1' "${2}")
+		# File and string
+		elif [ -f "${1}" ] && [ -n "${2}" ]; then
+			part_a=$(awk '1' "${1}")
+			part_b="${2}"
+		# String and file
+		elif [ -f "${2}" ] && [ -n "${1}" ]; then
+			part_a="${1}"
+			part_b=$(awk '1' "${2}")
+			target="${2}"
+		else
+			printf '%s\n' "File not found"
+			return 127
+		fi
+
+		printf '%s\n' "${part_a}${part_b}" | "${sudo_cmd}"tee "${target}" >/dev/null 2>&1
+	}
+fi
+
+if [ "${1:-}" = 'join_file' ] || [ "${1:-}" = '--' ] && [ "${#}" -gt 1 ]; then
+	shift $(($# > 0 ? 1 : 0))
+	eval "join_file ${*}"
+	exit "${?}"
+fi

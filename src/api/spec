@@ -1,0 +1,117 @@
+#!/usr/bin/env sh
+
+# Usage: doc/read/api.md#spec
+if [ "${1:-}" = 'spec' ] || [ "${1:-}" = '--' ] || [ "${#}" -lt 1 ]; then
+	spec() {
+		if [ "${#}" -lt 1 ]; then
+			printf '%s\n' "Invalid input: Missing arguments"
+			return 127
+		elif [ "${#}" -gt 3 ]; then
+			printf '%s\n' "Invalid input: Too many arguments"
+			return 1
+		fi
+
+		SPEC_ERROR_TOTAL=${SPEC_ERROR_TOTAL:-0}
+
+		positional_args=''
+
+		arg_error() {
+			if [ -z "${2:-}" ] || [ "${2:-}" != "${2#\-}" ]; then
+				printf '%s\n' "Error: Argument for ${1} is missing"
+				exit 1
+			fi
+		}
+
+		for arg in "$@"; do
+			# Set arguments
+			arg_1="${1:-}"
+			arg_2="${2:-}"
+
+			# Check for positional arguments
+			if [ "${arg_1:-}" = "${arg_1#\-}" ] && [ "${arg_2:-}" = "${arg_2#\-}" ]; then
+				positional_args="${positional_args} ${arg_2}"
+			elif [ "${#}" = 1 ] && [ "${arg_1:-}" = "${arg_1#\-}" ]; then
+				positional_args="${positional_args} ${arg_1}"
+			fi
+
+			# Check for flag arguments
+			case "${arg:-}" in
+			-a | --assert)
+				arg_error "${1:-}" "${2:-}"
+				assert_arg_1="${2:-}"
+				assert_arg_2="${3:-}"
+				shift 3
+				;;
+			-d | --describe)
+				arg_error "${1:-}" "${2:-}"
+				describe_arg="${2:-}"
+				shift 2
+				;;
+			-e | --evaluate)
+				arg_error "${1:-}" "${2:-}"
+				evaluate_arg="${2:-}"
+				shift 2
+				;;
+			--* | -*)
+				printf '%s\n' "Error: Unsupported flag: ${arg_1}"
+				exit 1
+				;;
+			esac
+		done
+
+		set +u
+		set -- "${@}" "${positional_args}"
+		set -u
+
+		stop_color=$(tput sgr0)
+
+		if [ -n "${describe_arg}" ]; then
+			start_color=$(tput setaf 12)
+			printf '%s' "${start_color}${describe_arg}${stop_color} "
+			describe_arg=''
+		fi
+
+		if [ -n "${evaluate_arg:-}" ]; then
+			eval "${evaluate_arg}"
+
+			SPEC_EXIT_STATUS="${?}"
+			export SPEC_EXIT_STATUS
+
+			evaluate_arg=''
+
+			return "${SPEC_EXIT_STATUS}"
+		fi
+
+		if [ -n "${assert_arg_1:-}" ]; then
+			start_color=$(tput setaf 2)
+			stop_color=$(tput sgr0)
+
+			exit_status=0
+
+			if [ "${assert_arg_1:-}" != "${assert_arg_2:-}" ]; then
+				start_color=$(tput setaf 9)
+				exit_status=1
+				SPEC_ERROR_TOTAL=$((SPEC_ERROR_TOTAL + 1))
+				export SPEC_ERROR_TOTAL
+			fi
+
+			if [ "${exit_status}" = 0 ]; then
+				printf '%s\n' "${start_color}✔PASS${stop_color}"
+			else
+				printf '%s\n' "${start_color}❌FAIL${stop_color}" >&2
+			fi
+
+			spec_exit_code="${assert_arg_1}"
+			assert_arg_1=''
+			assert_arg_2=''
+
+			return "${spec_exit_code}"
+		fi
+	}
+fi
+
+if [ "${1:-}" = 'spec' ] || [ "${1:-}" = '--' ] && [ "${#}" -gt 1 ]; then
+	shift $(($# > 0 ? 1 : 0))
+	eval "spec ${*}"
+	exit "${?}"
+fi

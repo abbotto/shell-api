@@ -1,0 +1,72 @@
+#!/usr/bin/env sh
+
+set -u
+
+STRICT_MODE=true
+export STRICT_MODE
+
+SHELL_API_PASS_COUNT=0
+SHELL_API_FAIL_COUNT=0
+
+EXIT_MESSAGE() {
+	printf '%s\n' '∙'
+	printf '%s\n' "∙ END $(command -v "${SHELL_API_ENV:-}"): ${SHELL_API_PASS_COUNT} passed"
+	printf '%s\n' '∙ ∙ ∙ ∙ ∙ ∙ ∙ ∙ ∙ ∙ ∙ ∙ ∙ ∙ ∙ ∙ ∙ ∙ ∙ ∙ ∙ ∙ ∙ ∙ ∙ ∙ ∙'
+}
+
+# shellcheck disable=SC2064
+trap "EXIT_MESSAGE;" EXIT INT HUP TERM
+
+# Generate a temporary 'daemon'
+# script for the *-daemon tests
+mkdir -p /tmp/shell-api/
+echo "#!/usr/bin/env ${SHELL_API_ENV:-}" | tee /tmp/shell-api/daemon_test >/dev/null 2>&1
+echo 'ping -c 255 127.0.0.1' | tee -a /tmp/shell-api/daemon_test >/dev/null 2>&1
+chmod +x /tmp/shell-api/daemon_test
+
+# shellcheck disable=SC2181
+exit_handler() {
+	exit_code="${?}"
+
+	if [ "${exit_code}" = 0 ]; then
+		SHELL_API_PASS_COUNT=$((SHELL_API_PASS_COUNT + 1))
+	else
+		SHELL_API_FAIL_COUNT=$((SHELL_API_FAIL_COUNT + 1))
+	fi
+
+	if [ "${exit_code}" -gt 0 ]; then
+		exit "${exit_code}"
+	fi
+}
+
+# Tests
+./test/tmp/spec/confirm.test
+exit_handler
+./test/tmp/spec/export-file.test
+exit_handler
+./test/tmp/spec/join-file.test
+exit_handler
+./test/tmp/spec/log-text.test
+exit_handler
+./test/tmp/spec/make-text.test
+exit_handler
+./test/tmp/spec/pipe-file.test
+exit_handler
+./test/tmp/spec/print-text.test
+exit_handler
+./test/tmp/spec/read-file.test
+exit_handler
+./test/tmp/spec/require.test
+exit_handler
+./test/tmp/spec/spec.test
+exit_handler
+./test/tmp/spec/substring.test
+exit_handler
+./test/tmp/spec/start-daemon.test
+exit_handler
+./test/tmp/spec/watch-daemon.test
+exit_handler
+./test/tmp/spec/stop-daemon.test
+exit_handler
+./test/tmp/spec/write-file.test
+exit_handler

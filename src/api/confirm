@@ -1,0 +1,54 @@
+#!/usr/bin/env sh
+
+# Usage: doc/read/api.md#confirm
+if [ "${1:-}" = 'confirm' ] || [ "${1:-}" = '--' ] || [ "${#}" -lt 1 ]; then
+	confirm() {
+		if [ "${#}" -lt 3 ]; then
+			printf '%s\n' "Invalid input: Missing arguments"
+			return 127
+		elif [ "${#}" -gt 3 ]; then
+			printf '%s\n' "Invalid input: Too many arguments"
+			return 1
+		fi
+
+		exit_code=127
+		question="${1}"
+		yes_callback="${2}"
+		no_callback="${3}"
+
+		# Ask a 'yes' or 'no' question
+		[ -n "${question}" ] && printf '%s\n' "${question} "
+
+		# Look for piped input
+		if [ -p /dev/stdin ]; then
+			while read -r stdin; do
+				response="${stdin}"
+			done
+		fi
+
+		# Listen for interactive input
+		if [ -z "${response}" ]; then
+			old_stty_cfg=$(stty -g)
+			stty raw -printf '%s\n'
+			response=$(while ! head -c 1 | grep -i '[ny]'; do true; done)
+			stty "${old_stty_cfg}"
+		fi
+
+		# Respond to input
+		if printf '%s\n' "${response}" | grep -iq "^y"; then
+			"${yes_callback}"
+			exit_code=0
+		elif [ -n "${2}" ]; then
+			"${no_callback}"
+			exit_code=1
+		fi
+
+		return "${exit_code}"
+	}
+fi
+
+if [ "${1:-}" = 'confirm' ] || [ "${1:-}" = '--' ] && [ "${#}" -gt 1 ]; then
+	shift $(($# > 0 ? 1 : 0))
+	eval "confirm ${*}"
+	exit "${?}"
+fi

@@ -1,0 +1,38 @@
+#!/usr/bin/env sh
+
+# Usage: doc/read/api.md#watch_daemon
+if [ "${1:-}" = 'watch_daemon' ] || [ "${1:-}" = '--' ] || [ "${#}" -lt 1 ]; then
+	watch_daemon() {
+		if [ -z "${1:-}" ]; then
+			printf '%s\n' "Invalid input: Missing arguments"
+			return 127
+		elif [ "${#}" -gt 3 ]; then
+			printf '%s\n' "Invalid input: Too many arguments"
+			return 1
+		fi
+
+		opts=" -f"
+
+		if [ "${1}" = "-n" ] || [ "${1}" = "--no-follow" ]; then
+			opts=""
+			shift $(($# > 0 ? 1 : 0))
+		fi
+
+		log_path="/tmp/shell-api/${1}.log"
+
+		if [ ! -f "${log_path}" ]; then
+			printf '%s\n' "Cannot show output for '${1}' - no such process"
+			return 127
+		fi
+
+		tail"${opts}" "${log_path}"
+
+		return "${?}"
+	}
+fi
+
+if [ "${1:-}" = 'watch_daemon' ] || [ "${1:-}" = '--' ] && [ "${#}" -gt 1 ]; then
+	shift $(($# > 0 ? 1 : 0))
+	eval "watch_daemon ${*}"
+	exit "${?}"
+fi

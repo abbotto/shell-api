@@ -1,0 +1,42 @@
+#!/usr/bin/env sh
+
+set -u
+
+SPEC_NAME='start_daemon'
+export SPEC_NAME
+
+tmp=$(mktemp -d)
+
+# Remove the temporary directory when the script quits
+# shellcheck disable=SC2064
+trap "rm -rf '${tmp}'" EXIT INT HUP TERM
+
+. ./test/tmp/shell-api
+./test/util/test-intro.sh
+
+start_daemon daemon_test /tmp/shell-api/daemon_test
+exit_code="${?}"
+
+if [ "${exit_code}" -gt 0 ]; then
+	return "${exit_code}"
+fi
+
+pid=$(cat /tmp/shell-api/daemon_test.pid)
+
+if [ -z "${pid}" ]; then
+	return 127
+fi
+
+spec --describe "∙ should pass when the daemon has been started..."
+spec --evaluate "echo '${exit_code}' >/dev/null 2>&1"
+spec --assert "${?}" 0
+
+spec --describe "∙ should fail when there are not enough arguments..."
+spec --evaluate "start_daemon >/dev/null 2>&1"
+spec --assert "${?}" 127
+
+spec --describe "∙ should fail when there are too many arguments..."
+spec --evaluate "start_daemon 1 2 3 4 >/dev/null 2>&1"
+spec --assert "${?}" 1
+
+. ./test/util/test-outro.sh

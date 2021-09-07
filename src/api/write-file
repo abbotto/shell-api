@@ -1,0 +1,46 @@
+#!/usr/bin/env sh
+
+# Usage: doc/read/api.md#write_file
+if [ "${1:-}" = 'write_file' ] || [ "${1:-}" = '--' ] || [ "${#}" -lt 1 ]; then
+	write_file() {
+		if [ -z "${1:-}" ]; then
+			printf '%s\n' "Invalid input: Missing arguments"
+			return 127
+		fi
+
+		if [ "${#}" -gt 3 ]; then
+			printf '%s\n' "Invalid input: Too many arguments"
+			return 1
+		fi
+
+		# Parse arguments
+		for arg in "${@}"; do
+			shift
+			case "${arg}" in
+			-a | --auth) auth_flag="sudo " ;;
+			--* | -*)
+				printf '%s\n' "Error: Unsupported flag: ${1}"
+				exit 1
+				;;
+			*) set -- "${@}" "${arg}" ;;
+			esac
+		done
+
+		sudo_cmd="${auth_flag:-}"
+
+		if [ ! -f "${1}" ]; then
+			directory=$(dirname "${1}")
+			if [ ! -d "${directory}" ]; then mkdir -p "${directory}"; fi
+			touch "${1}"
+		fi
+
+		printf '%s\n' "${2}" | "${sudo_cmd}"tee "${1}" >/dev/null 2>&1 || return 1
+		return 0
+	}
+fi
+
+if [ "${1:-}" = 'write-file' ] || [ "${1:-}" = '--' ] && [ "${#}" -gt 1 ]; then
+	shift $(($# > 0 ? 1 : 0))
+	eval "write-file ${*}"
+	exit "${?}"
+fi

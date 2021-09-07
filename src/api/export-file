@@ -1,0 +1,95 @@
+#!/usr/bin/env sh
+
+# Usage: doc/read/api.md#export_file
+if [ "${1:-}" = 'export_file' ] || [ "${1:-}" = '--' ] || [ "${#}" -lt 1 ]; then
+	export_file() {
+		if [ "${#}" -lt 1 ]; then
+			printf '%s\n' "Invalid input: Missing arguments"
+			return 127
+		fi
+
+		# Parse arguments
+		for arg in "${@}"; do
+			shift
+			case "${arg}" in
+			-f | --force) force_flag=0 ;;
+			--* | -*)
+				printf '%s\n' "Error: Unsupported flag: ${1}"
+				exit 1
+				;;
+			*) set -- "${@}" "${arg}" ;;
+			esac
+		done
+
+		# Create a temporary directory to store working files
+		tmp_env_file_path="$(mktemp -d)"
+
+		# Remove the temporary directory when the script quits
+		# shellcheck disable=SC2064
+		trap "rm -rf '${tmp_env_file_path}'" EXIT INT HUP TERM
+
+		# Required to store the environment variable names that exist
+		# in the current process when the 'export_file' function is executed
+		# When the '-f|--force' argument is passed the function will attempt
+		# to update any process variables that are found in the source file
+		[ -z "${force_flag:-}" ] && mkfifo "${tmp_env_file_path}/process_env_vars"
+
+		# Loop over source files
+		while [ -n "${1:-}" ]; do
+			source_env_file_path="${1}"
+			shift $(($# > 0 ? 1 : 0))
+
+			if [ ! -f "${source_env_file_path}" ]; then
+				printf '%s\n' "Required resource not found: '${source_env_file_path}'"
+			else
+				# A cache for variables that should not be overwritten
+				safe_env_vars=''
+
+				if [ -p "${tmp_env_file_path}/process_env_vars" ]; then
+					# Loop over process variable names and write them to a named pipe
+					awk 'BEGIN{for(v in ENVIRON) {
+						# Exclude variables that are included by "awk"
+						if (v != "AWKLIBPATH" && v != "AWKPATH")
+							print v
+					}}' | tee >"${tmp_env_file_path}/process_env_vars" &
+
+					# Loop over existing variable names
+					while read -r key; do
+						# Get the value of the 'key' variable
+						value="$(eval printf '%s\\n' "\${${key}:-}")"
+						safe_env_vars="${safe_env_vars}${key}='${value}';"
+					done <"${tmp_env_file_path}/process_env_vars"
+				fi
+
+				# Trim whitespace
+				# shellcheck disable=SC2002
+				source_env_vars="$(
+					cat "${source_env_file_path}" |
+						sed 's|\(= *\)|=|g' |
+						awk '{$1=$1}1'
+				)"
+
+				# Set the 'allexport' option if it wasn't
+				# set before 'export_file' was executed
+				# shellcheck disable=SC2015
+				[ "${-#*a}" != "$-" ] && isset_allexport=0 || set -a
+
+				# Export the provided variables
+				[ -n "${source_env_vars}" ] && eval "${source_env_vars}"
+
+				# Ensure that safe variables are restored
+				[ -n "${safe_env_vars}" ] && eval "${safe_env_vars}"
+
+				# Unset the 'allexport' option if it wasn't
+				# set before the function was executed
+				[ -z "${isset_allexport:-}" ] && set +a
+			fi
+		done
+	}
+fi
+
+if [ "${1:-}" = 'export_file' ] || [ "${1:-}" = '--' ] && [ "${#}" -gt 1 ]; then
+	shift $(($# > 0 ? 1 : 0))
+	eval "export_file ${*}"
+	exit "${?}"
+fi

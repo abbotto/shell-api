@@ -1,0 +1,32 @@
+#!/usr/bin/env sh
+
+set -u
+
+SPEC_NAME='stop_daemon'
+export SPEC_NAME
+
+. ./test/tmp/shell-api
+./test/util/test-intro.sh
+
+stop_daemon daemon_test
+exit_code="${?}"
+log="/tmp/shell-api/daemon_test.log"
+pid="/tmp/shell-api/daemon_test.pid"
+
+if [ ! -f "${log}" ] && [ -f "${pid}" ]; then
+	exit_code=0
+fi
+
+spec --describe "∙ should pass when the daemon has been stopped..."
+spec --evaluate "echo '${exit_code}' >/dev/null 2>&1"
+spec --assert "${?}" 0
+
+spec --describe "∙ should fail when there are not enough arguments..."
+spec --evaluate "stop_daemon >/dev/null 2>&1"
+spec --assert "${?}" 127
+
+spec --describe "∙ should fail when there are too many arguments..."
+spec --evaluate "stop_daemon 1 2 3 4 >/dev/null 2>&1"
+spec --assert "${?}" 1
+
+. ./test/util/test-outro.sh

@@ -1,0 +1,93 @@
+#!/usr/bin/env sh
+
+set -u
+
+SPEC_NAME='export_file'
+export SPEC_NAME
+
+. ./test/tmp/shell-api
+./test/util/test-intro.sh
+
+exit_code=0
+script_path=$(
+	cd "$(dirname "${0}")" || .
+	pwd
+)
+multi_line_encoded='multi\nline\nstring'
+
+multi_line_single_quote='multi
+line
+string?q=abc123'
+
+multi_line_double_quote="multi
+line
+string?q=abc123"
+
+expect_value() {
+	SPEC_EXIT_STATUS=0
+
+	value=$(eval printf '%s\\n' \"\$"${1}"\")
+
+	if [ "${value}" != "${2}" ]; then
+		SPEC_EXIT_STATUS=127
+
+		print_text 9 '%s' "∙  The '${1}' variable has an unexpected value"
+		print_text 8 '\n%s' "  Expected: $(print_text 10 "${2}")"
+		print_text 8 '\n%s\n' "  Received: $(print_text 10 "${value}")"
+	else
+		print_text 12 '%s' "  ${1} "
+	fi
+
+	spec --assert "${SPEC_EXIT_STATUS}" 0
+}
+
+spec --describe "∙ should fail when there are not enough arguments..."
+spec --evaluate "export_file >/dev/null 2>&1"
+spec --assert "${?}" 127
+
+# Do not overwrite previously exported variables
+export_file \
+	"${script_path}"/export-file.env.00 \
+	"${script_path}"/export-file.env.01
+
+SPEC_EXIT_STATUS="${?}"
+spec --describe "∙ should export files correctly..."
+spec --assert "${SPEC_EXIT_STATUS}" 0
+
+spec --describe "∙ should set environment variables correctly..."
+printf '%s\n' ''
+expect_value 'ENV_VAR' 'FOO1'
+expect_value 'ENV_VAR_COMMAND' 'FOO7'
+expect_value 'ENV_VAR_DQ_WRAP' 'FOO3'
+expect_value 'ENV_VAR_DQ_WRAP_JSON_ESCAPE_NESTED_SQ' "{\'foo\':\'bar\'}"
+expect_value 'ENV_VAR_DQ_WRAP_JSON_NESTED_DQ' '{foo:bar}'
+expect_value 'ENV_VAR_DQ_WRAP_MULTI_LINE' "${multi_line_double_quote}"
+expect_value 'ENV_VAR_DQ_WRAP_NESTED_SQ' "'foo5'"
+expect_value 'ENV_VAR_EMPTY' ''
+expect_value 'ENV_VAR_ENCODED' 'foo\sbar'
+expect_value 'ENV_VAR_ENCODED_MULTI_LINE' "${multi_line_encoded}"
+expect_value 'ENV_VAR_SQ_WRAP' 'FOO4'
+expect_value 'ENV_VAR_SQ_WRAP_JSON_ESCAPE_NESTED_DQ' '{\"foo\":\"bar\"}'
+expect_value 'ENV_VAR_SQ_WRAP_JSON_NESTED_SQ' '{foo:bar}'
+expect_value 'ENV_VAR_SQ_WRAP_MULTI_LINE' "${multi_line_single_quote}"
+expect_value 'ENV_VAR_SQ_WRAP_NESTED_DQ' '"foo6"'
+expect_value 'ENV_VAR_TRIM_WHITESPACE' 'foo8'
+expect_value 'ENV_VAR_UNICODE_CHARACTER' '안녕하세요-세계'
+expect_value 'ENV_VAR_WITH_EQUALS' 'foo2=qwerty'
+expect_value 'ENV_VAR_WITH_SPACES' 'hello world'
+
+# Overwrite previously exported variables
+export_file "${script_path}"/export-file.env.01 --force
+
+SPEC_EXIT_STATUS="${?}"
+spec --describe "∙ should export files with '-f|--force' correctly..."
+spec --assert "${SPEC_EXIT_STATUS}" 0
+
+spec --describe "∙ should overwrite environment variables correctly..."
+printf '%s\n' ''
+expect_value 'ENV_VAR' 'foo1'
+expect_value 'ENV_VAR_COMMAND' 'foo7'
+expect_value 'ENV_VAR_DQ_WRAP' 'foo3'
+expect_value 'ENV_VAR_SQ_WRAP' 'foo4'
+
+. ./test/util/test-outro.sh

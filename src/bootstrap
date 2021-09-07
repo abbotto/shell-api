@@ -1,0 +1,23 @@
+#!/usr/bin/env sh
+
+################################################################
+# Conditions, fixes, and settings that must be invoked
+# before the 'shell-api' library functions are initialized
+################################################################
+
+# Exit the script if the input is bad
+if [ "${1:-}" = '--' ]; then
+	printf '%s\n' "Invalid input: ${*}"
+	exit 1
+fi
+
+# Enable 'strict_mode' if is enabled by an
+# environment variable or script argument
+if [ "${STRICT_MODE:-}" = 'true' ]; then
+	strict_mode
+fi
+
+# Ensure $TERM is set to avoid the following error:
+# tput: No value for $TERM and no -T
+TERM="${TERM:-xterm}"
+export TERM

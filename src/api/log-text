@@ -1,0 +1,108 @@
+#!/usr/bin/env sh
+
+# Usage: doc/read/api.md#log_text
+if [ "${1:-}" = 'log_text' ] || [ "${1:-}" = '--' ] || [ "${#}" -lt 1 ]; then
+	log_text() {
+		if [ -z "${1}" ] || [ -z "${2}" ]; then
+			printf '%s\n' "Invalid input: Missing arguments"
+			return 127
+		elif [ "${#}" -gt 3 ]; then
+			printf '%s\n' "Invalid input: Too many arguments"
+			return 1
+		fi
+
+		log_file_input="${3:-}"
+		log_text_input=$(printf '%s' "${1:-}" | tr '[:lower:]' '[:upper:]')
+		log_msg_input="${2:-}"
+
+		# Date and time
+		# date_time_rfc_3339=$(date --rfc-3339=seconds)
+		date_time="$(date +%Y-%m-%d) $(date +%T%z)"
+
+		# Log path
+		# > If the log path is set via 'LOG_TEXT_PATH', that path will be used
+		# > If the log path is set via an argument, that path will take precedent
+		# > If a log path is not found, one will be generated and set to 'LOG_TEXT_PATH'
+		LOG_TEXT_PATH="${LOG_TEXT_PATH:-$(mktemp -d)}"
+
+		log_text_filename="$(date +%Y%m%d).log"
+
+		if [ -n "${log_file_input}" ]; then
+			LOG_TEXT_PATH="${log_file_input}"
+		fi
+
+		export LOG_TEXT_PATH
+
+		log_text_file_path="${LOG_TEXT_PATH}/${log_text_filename}"
+
+		# Log levels
+		# > [5] TRACE - Verbose diagnostic information generally used by developers
+		# > [4] DEBUG - Diagnostic information generally used by developers and administators
+		# > [3] INFO  - General information about the state of the process and it's operations
+		# > [2] WARN  - When something abnormal has occurred but the system can recover safely
+		# > [1] ERROR - When a problem is fatal to an operation, but not for the parent process
+		# > [0] FATAL - When a process stops because it cannot recover safely Sfrom an abnormal state
+		# > [X] OFF   - Disable all logging
+		log_text_priority="${LOG_TEXT_PRIORITY:-'TRACE'}"
+		priority=5
+		priority_threshold=5
+
+		stop_color=$(tput sgr0)
+
+		case "${log_text_input}" in
+		'TRACE')
+			priority=5
+			start_color=$(tput setaf 4)
+			;;
+		'DEBUG')
+			priority=4
+			start_color=$(tput setaf 6)
+			;;
+		'INFO')
+			priority=3
+			start_color=$(tput setaf 2)
+			;;
+		'WARN')
+			priority=2
+			start_color=$(tput setaf 3)
+			;;
+		'ERROR')
+			priority=1
+			start_color=$(tput setaf 1)
+			;;
+		'FATAL')
+			priority=0
+			start_color=$(tput setaf 5)
+			;;
+		'OFF') ;;
+		*) return 127 ;;
+		esac
+
+		case "${log_text_priority}" in
+		'TRACE') priority_threshold=5 ;;
+		'DEBUG') priority_threshold=4 ;;
+		'INFO') priority_threshold=3 ;;
+		'WARN') priority_threshold=2 ;;
+		'ERROR') priority_threshold=1 ;;
+		'FATAL') priority_threshold=0 ;;
+		'OFF') priority_threshold=-1 ;;
+		esac
+
+		# Log output
+		# > <TIMESTAMP [RFC 3339]> (<PID>)[<PRIORITY>]: <MESSAGE>
+		# > Write the log to a file if the current message is within the priority_threshold
+		if [ "${priority}" -le "${priority_threshold}" ]; then
+			printf '%s\n' "${start_color}${date_time} ($$)[${log_text_input}]${stop_color}: ${log_msg_input}" || return 1
+			printf '%s\n' "${date_time} ($$)[${log_text_input}]: ${log_msg_input}" |
+				tee -a "${log_text_file_path}" >/dev/null 2>&1 || return 1
+		fi
+
+		return 0
+	}
+fi
+
+if [ "${1:-}" = 'log_text' ] || [ "${1:-}" = '--' ] && [ "${#}" -gt 1 ]; then
+	shift $(($# > 0 ? 1 : 0))
+	eval "log_text ${*}"
+	exit "${?}"
+fi

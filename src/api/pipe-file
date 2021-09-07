@@ -1,0 +1,76 @@
+#!/usr/bin/env sh
+
+# Usage: doc/read/api.md#pipe_file
+if [ "${1:-}" = 'pipe_file' ] || [ "${1:-}" = '--' ] || [ "${#}" -lt 1 ]; then
+	pipe_file() {
+		if [ -z "${1:-}" ]; then
+			printf '%s\n' "Invalid input: Missing arguments"
+			return 127
+		elif [ "${#}" -gt 4 ]; then
+			printf '%s\n' "Invalid input: Too many arguments"
+			return 1
+		fi
+
+		# Parse arguments
+		for arg in "${@}"; do
+			shift
+			case "${arg}" in
+			-a | --auth) auth_flag=" sudo" ;;
+			--* | -*)
+				printf '%s\n' "Error: Unsupported flag: ${1}"
+				exit 1
+				;;
+			*) set -- "${@}" "${arg}" ;;
+			esac
+		done
+
+		depth=""
+		placeholder=""
+		sudo_cmd="${auth_flag:-}"
+
+		if [ "$1" -ge 0 ] >/dev/null 2>&1; then
+			depth=" -maxdepth ${1}"
+			shift $(($# > 0 ? 1 : 0))
+		fi
+
+		file_path=$(dirname "${1}")
+		file_pattern=$(basename "${1}")
+
+		printf '%s\n' "File: ${1}"
+
+		if [ ! -f "${1}" ]; then
+			printf '%s\n' "File not found: '${1}'"
+			return 127
+		fi
+
+		shift $(($# > 0 ? 1 : 0))
+
+		if [ -z "${file_path}" ]; then
+			printf '%s\n' "Path is missing"
+			return 127
+		fi
+
+		if [ -z "${file_pattern}" ]; then
+			printf '%s\n' "Pattern is missing"
+			return 127
+		fi
+
+		if [ -z "${1:-}" ]; then
+			printf '%s\n' "Command argument is missing"
+			return 127
+		fi
+
+		# The '-iname' option instructs 'find' to search for files based on a pattern.
+		# The '-print0' option instructs 'find' to properly handle filenames containing blanks or newlines.
+		# The '-0' option instructs 'xargs' to split input on null bytes instead of blanks or newlines.
+		# The '-I' option instructs 'xargs' to look for the '{}' placeholder and replace it with a filename.
+		if printf '%s\n' "${*}" | grep -q "{}" >/dev/null 2>&1; then placeholder=" -I{}"; fi
+		eval "find ${file_path} -iname ${file_pattern}${depth} -print0 | xargs -0${placeholder}${sudo_cmd} ${*}"
+	}
+fi
+
+if [ "${1:-}" = 'pipe_file' ] || [ "${1:-}" = '--' ] && [ "${#}" -gt 1 ]; then
+	shift $(($# > 0 ? 1 : 0))
+	eval "pipe_file ${*}"
+	exit "${?}"
+fi

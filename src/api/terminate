@@ -1,0 +1,38 @@
+#!/usr/bin/env sh
+
+# Usage: doc/read/api.md#terminate
+if [ "${1:-}" = 'terminate' ] || [ "${1:-}" = '--' ] || [ "${#}" -lt 1 ]; then
+	terminate() {
+		if [ "${#}" -lt 1 ]; then
+			printf '%s\n' "Invalid input: Missing arguments"
+			return 127
+		elif [ "${#}" -gt 3 ]; then
+			printf '%s\n' "Invalid input: Too many arguments"
+			return 1
+		fi
+
+		green=$(tput setaf 2)
+		red=$(tput setaf 9)
+		no_color=$(tput sgr0)
+
+		pass_msg="${2:-}"
+		fail_msg="${3:-}"
+
+		if [ "${1}" = 0 ] && [ -n "${2:-}" ]; then
+			printf '%s\n' "${green}${pass_msg}${no_color}"
+		elif [ -n "${2:-}" ] && [ -n "${3:-}" ]; then
+			printf '%s\n' "${red}${fail_msg}${no_color}" >&2
+		elif [ "${#}" -lt 2 ]; then
+			printf '%s\n' "Invalid input: ${*}"
+			return 1
+		fi
+
+		exit "${1}"
+	}
+fi
+
+if [ "${1:-}" = 'terminate' ] || [ "${1:-}" = '--' ] && [ "${#}" -gt 1 ]; then
+	shift $(($# > 0 ? 1 : 0))
+	eval "terminate ${*}"
+	exit "${?}"
+fi

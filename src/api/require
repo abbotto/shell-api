@@ -1,0 +1,41 @@
+#!/usr/bin/env sh
+
+# Usage: doc/read/api.md#require
+if [ "${1:-}" = 'require' ] || [ "${1:-}" = '--' ] || [ "${#}" -lt 1 ]; then
+	require() {
+		if [ -z "${1:-}" ]; then
+			printf '%s\n' "Invalid input: Missing arguments"
+			return 127
+		fi
+
+		if [ "${#}" -gt 2 ]; then
+			printf '%s\n' "Invalid input: Too many arguments"
+			return 1
+		fi
+
+		requirement="${1:-}"
+		message="${2:-}"
+
+		if [ -n "${requirement}" ]; then
+			if [ -f "${requirement}" ]; then
+				if head -n1 "${requirement}" | grep -q '^#!'; then
+					. "${requirement}"
+				fi
+
+				return "${?}"
+			elif [ -n "$(command -v "${requirement}")" ]; then
+				return 0
+			else
+				printf '%s\n' "Requirement is missing: '${requirement}'"
+				[ -n "${message}" ] && printf '%s\n' "${message}"
+				return 127
+			fi
+		fi
+	}
+fi
+
+if [ "${1:-}" = 'require' ] || [ "${1:-}" = '--' ] && [ "${#}" -gt 1 ]; then
+	shift $(($# > 0 ? 1 : 0))
+	eval "require ${*}"
+	exit "${?}"
+fi
